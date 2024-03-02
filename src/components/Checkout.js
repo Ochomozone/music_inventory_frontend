@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import CheckoutSearch from './util/CheckoutSearch';
+import CheckoutSearch from '../util/CheckoutSearch';
 import './Styles.css';
 
-function Checkouts() {
+function Checkouts({baseUrl}) {
   const [dispatches, setCheckouts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchCheckouts();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchCheckouts = async () => {
     try {
-      const response = await fetch('http://localhost:4001/dispatches');
+      const response = await fetch(baseUrl);
       if (!response.ok) {
         throw new Error('Failed to fetch dispatches');
       }
@@ -66,7 +67,7 @@ function Checkouts() {
   return (
     <div className="container">
       <h1>Instrument Checkouts</h1>
-      <CheckoutSearch onDataFetched={handleDataFetched} onClear={handleClearFields}/>
+      <CheckoutSearch onDataFetched={handleDataFetched} baseUrl={baseUrl} onClear={handleClearFields}/>
       <div className="table-container">
         <table className="table">
           <thead>

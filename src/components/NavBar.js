@@ -10,7 +10,9 @@ const NavigationBar = () => {
           <li>
             <NavLink to="/checkouts" >Checkouts</NavLink>
           </li>
-          {/* Add more links for other pages */}
+          <li>
+            <NavLink to="/users" >Users</NavLink>
+          </li>
         </ul>
       </nav>
     );

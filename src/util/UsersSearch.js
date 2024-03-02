@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 
-const fetchData = async (userName = '', classValue = '') => {
-  let url = 'http://localhost:4001/dispatches';
+const fetchData = async (baseUrl, userName = '', userDivision = '', classValue = '') => {
+  let url = `${baseUrl}`;
   const params = new URLSearchParams();
 
   if (userName.length > 0) {
     params.append('userName', userName);
   }
+  if (userDivision.length > 0) {
+    params.append('userDivision', userDivision);
+  }
   if (classValue.length > 0) {
-    params.append('class', classValue);
+    params.append('classValue', classValue);
   }
 
   if (params.toString()) {
@@ -28,12 +31,13 @@ const fetchData = async (userName = '', classValue = '') => {
   }
 };
 
-const CheckoutSearch = ({ onDataFetched }) => {
+const UsersSearch = ({ baseUrl, onDataFetched }) => {
   const [userName, setUserName] = useState('');
+  const [userDivision, setUserDivision] = useState('');
   const [classValue, setClassValue] = useState('');
 
   const handleFetchData = async () => {
-    const data = await fetchData(userName, classValue);
+    const data = await fetchData(baseUrl, userName, userDivision, classValue);
     if (data) {
       onDataFetched(data);
     }
@@ -42,10 +46,11 @@ const CheckoutSearch = ({ onDataFetched }) => {
   const handleClearFields = async () => {
     // Reset the state
     setUserName('');
+    setUserDivision('');
     setClassValue('');
 
     // Fetch all data again
-    const data = await fetchData();
+    const data = await fetchData(baseUrl);
     if (data) {
       onDataFetched(data);
     }
@@ -53,8 +58,8 @@ const CheckoutSearch = ({ onDataFetched }) => {
 
   return (
     <div>
-        <label htmlFor="userName">
-        User Name:
+      <label htmlFor="userName">
+        Name:
         <input
           type="text"
           id="userName"
@@ -64,14 +69,26 @@ const CheckoutSearch = ({ onDataFetched }) => {
           autoComplete='off'
         />
       </label>
+      <label htmlFor="userDivision">
+        Division:
+        <input
+          type="text"
+          id="userDivision"
+          name="userDivision"
+          value={userDivision}
+          onChange={(e) => setUserDivision(e.target.value)}
+          autoComplete='off'
+        />
+      </label>
       <label htmlFor="classValue">
-        Class (optional):
+        Class:
         <input
           type="text"
           id="classValue"
           name="classValue"
           value={classValue}
           onChange={(e) => setClassValue(e.target.value)}
+          autoComplete='off'
         />
       </label>
       <button type="button" onClick={handleFetchData}>Search</button>
@@ -80,4 +97,4 @@ const CheckoutSearch = ({ onDataFetched }) => {
   );
 };
 
-export default CheckoutSearch;
+export default UsersSearch;

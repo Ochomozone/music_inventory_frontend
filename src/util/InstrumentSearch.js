@@ -54,17 +54,21 @@ const InstrumentFetcher = ({ onDataFetched, baseUrl }) => {
 
   return (
     <div>
-      <label>
+      <label htmlFor='InstrumentDescription'>
         Description:
         <input
+          id='InstrumentDescription'
+          name='InstrumentDescription'
           type="text"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
       </label>
-      <label>
+      <label htmlFor='InstrumentNumber'>
         Number (optional):
         <input
+          id='InstrumentNumber'
+          name='InstrumentNumber'
           type="text"
           value={number}
           onChange={(e) => setNumber(e.target.value)}

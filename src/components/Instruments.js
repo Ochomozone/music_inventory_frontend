@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import InstrumentFetcher from './util/InstrumentSearch';
+import InstrumentFetcher from '../util/InstrumentSearch';
 import './Styles.css';
 
-function Instruments() {
+function Instruments({ baseUrl }) {
   const [instruments, setInstruments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchInstruments();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchInstruments = async () => {
     try {
-      const response = await fetch('http://localhost:4001/instruments');
+      const response = await fetch(baseUrl); 
       if (!response.ok) {
         throw new Error('Failed to fetch instruments');
       }
@@ -25,6 +26,7 @@ function Instruments() {
       setLoading(false);
     }
   };
+
 
   const handleDataFetched = (data) => {
     setInstruments(data);
@@ -49,7 +51,7 @@ function Instruments() {
     <div className="container">
       <h1>Instruments</h1>
       <h2>Search Instruments</h2>
-      <InstrumentFetcher onDataFetched={handleDataFetched} baseUrl={'http://localhost:4001/instruments'} onClear={handleClearFields}/>
+      <InstrumentFetcher onDataFetched={handleDataFetched} baseUrl={baseUrl} onClear={handleClearFields}/>
       <br />
       <div className="table-container">
         <table className="table">
