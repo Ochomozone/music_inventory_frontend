@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import InstrumentFetcher from '../util/InstrumentSearch';
-import './Styles.css';
+// import './Styles.css';
 
 function Instruments({ baseUrl }) {
   const [instruments, setInstruments] = useState([]);
@@ -51,10 +51,13 @@ function Instruments({ baseUrl }) {
 
   return (
     <div className="container">
-      <h1>Instruments</h1>
+      <div>
+        <h1>Instruments</h1>
+       
       <h2>Search Instruments</h2>
+      
       <InstrumentFetcher onDataFetched={handleDataFetched} baseUrl={baseUrl} onClear={handleClearFields}/>
-      <br />
+    
       <div className="table-container">
         <table className="table">
           <thead>
@@ -84,6 +87,7 @@ function Instruments({ baseUrl }) {
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

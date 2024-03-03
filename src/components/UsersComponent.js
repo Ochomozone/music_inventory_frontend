@@ -39,6 +39,7 @@ function UsersComponent({ baseUrl }) {
 
   return (
     <div className="container">
+      <div>
       <h1>Users</h1>
       <UsersSearch baseUrl={baseUrl} onDataFetched={handleDataFetched} />
       <div className="table-container">
@@ -68,6 +69,7 @@ function UsersComponent({ baseUrl }) {
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

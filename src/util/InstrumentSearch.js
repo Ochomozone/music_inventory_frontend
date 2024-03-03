@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './Util.css';
 
 const fetchData = async (baseUrl, number = '', description = '') => {
     let url = `${baseUrl}`;
@@ -53,30 +54,37 @@ const InstrumentFetcher = ({ onDataFetched, baseUrl }) => {
   };
 
   return (
-    <div>
-      <label htmlFor='InstrumentDescription'>
-        Description:
-        <input
-          id='InstrumentDescription'
-          name='InstrumentDescription'
-          type="text"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-      </label>
-      <label htmlFor='InstrumentNumber'>
-        Number (optional):
-        <input
-          id='InstrumentNumber'
-          name='InstrumentNumber'
-          type="text"
-          value={number}
-          onChange={(e) => setNumber(e.target.value)}
-        />
-      </label>
-      <button onClick={handleFetchData}>Search</button>
-      <button onClick={handleClearFields}>Clear</button>
+    <div className="container">
+      <div>
+        <label htmlFor="InstrumentDescription">Description:</label>
+      </div>
+        <div>
+          <input
+            id="InstrumentDescription"
+            name="InstrumentDescription"
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+      <div >
+        <label htmlFor="InstrumentNumber">Number (optional):</label>
+      </div>
+      <div>
+    <input
+      id="InstrumentNumber"
+      name="InstrumentNumber"
+      type="text"
+      value={number}
+      onChange={(e) => setNumber(e.target.value)}
+    />
     </div>
+    <button type="button" onClick={handleFetchData}>Search</button>
+    <button type="button" onClick={handleClearFields}>Clear</button>
+</div>
+
+
+
   );
 };
 

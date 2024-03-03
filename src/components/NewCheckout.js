@@ -60,7 +60,7 @@ const fetchUserData = async (baseUrl, userName = '', userDivision = '', classVal
 };
 
 const fetchInstrumentData = async (baseUrl, instrumentName = '', instrumentNumber = '') => {
-    let url = `${baseUrl}/instruments`;
+    let url = `${baseUrl}/available`;
     const params = new URLSearchParams();
   
     if (instrumentName.length > 0) {
@@ -95,21 +95,20 @@ const NewCheckout = ({ baseUrl }) => {
     const [userData, setUserData] = useState([]);
     const [selectedUserId, setSelectedUserId] = useState('');
     const [selectedRow, setSelectedRow] = useState(null);
-    const [userError, setUserError] = useState(null);
+    const [error, setError] = useState(null);
     const [description, setDescription] = useState('');
     const [number, setNumber] = useState('');
     const [instrumentData, setInstrumentData] = useState([]);
     const [selectedInstrumentDescription, setSelectedInstrumentDescription] = useState('');
     const [selectedInstrumentNumber, setSelectedInstrumentNumber] = useState('');
     const [selectedInstrumentRow, setSelectedInstrumentRow] = useState(null);
-    const [instrumentError, setInstrumentError] = useState(null);
   
     const handleUserSearch = async () => {
       try {
         const fetchedUserData = await fetchUserData(baseUrl, userName, userDivision, classValue);
         setUserData(fetchedUserData); 
       } catch (error) {
-        setUserError(error.message);
+        setError(error.message);
       }
     };
   
@@ -124,7 +123,7 @@ const NewCheckout = ({ baseUrl }) => {
           const fetchedInstrumentData = await fetchInstrumentData(baseUrl, description, number);
           setInstrumentData(fetchedInstrumentData); 
         } catch (error) {
-          setInstrumentError(error.message);
+          setError(error.message);
         }
       };
 
@@ -160,141 +159,140 @@ const NewCheckout = ({ baseUrl }) => {
           alert('Checkout submitted successfully');
         } catch (error) {
           console.error('Error submitting checkout:', error.message);
-          // Handle error
+            setError(error.message);
         }
       };
       
   
     return (
-      <div className="search-page">
-        <div className="search-section">
-          <div className="search-box">
-            <h2>User Search</h2>
-            <label htmlFor="userName">
-              User Name:
-              <input
-                type="text"
-                id="userName"
-                name="userName"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                autoComplete='off'
-              />
-            </label>
-            <label htmlFor="userDivision">
-              User Division:
-              <input
-                type="text"
-                id="userDivision"
-                name="userDivision"
-                value={userDivision}
-                onChange={(e) => setUserDivision(e.target.value)}
-                autoComplete='off'
-              />
-            </label>
-            <label htmlFor="classValue">
-              Class (optional):
-              <input
-                type="text"
-                id="classValue"
-                name="classValue"
-                value={classValue}
-                onChange={(e) => setClassValue(e.target.value)}
-                autoComplete='off'
-              />
-            </label>
-            <button type="button" onClick={handleUserSearch}>Search</button>
-          </div>
-          {userData.length > 0 && (
-          <div className="search-results">
-            <h2>Search Results</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Grade</th>
-                  <th>Select</th>
-                </tr>
-              </thead>
-              <tbody>
-                {userData.map((user, index) => (
-                  <tr key={user.id} className={selectedRow === index ? 'selected' : ''}>
-                    <td>{user.full_name}</td>
-                    <td>{user.grade_level}</td>
-                    <td>
-                      <button onClick={() => handleSelectUser(user.id, index)}>Select</button>
-                    </td>
+        <div className="search-page">
+        <div className="container">
+          <div className="search-section">
+            <div className="search-box">
+              <h2>User Search</h2>
+              <label htmlFor="userName">
+                User Name:
+                <input
+                  type="text"
+                  id="userName"
+                  name="userName"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  autoComplete='off'
+                />
+              </label>
+              <label htmlFor="userDivision">
+                User Division:
+                <input
+                  type="text"
+                  id="userDivision"
+                  name="userDivision"
+                  value={userDivision}
+                  onChange={(e) => setUserDivision(e.target.value)}
+                  autoComplete='off'
+                />
+              </label>
+              <label htmlFor="classValue">
+                Class (optional):
+                <input
+                  type="text"
+                  id="classValue"
+                  name="classValue"
+                  value={classValue}
+                  onChange={(e) => setClassValue(e.target.value)}
+                  autoComplete='off'
+                />
+              </label>
+              <button type="button" onClick={handleUserSearch}>Search</button>
+            </div>
+            <div className="search-results">
+              <h2>User Results</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Grade</th>
+                    <th>Select</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>)}
-        </div>
-        {userError && <p>Error: {userError}</p>}
-        <div className="search-section">
-        <div className="search-box">
-          <h2>Instrument Search</h2>
-          <label htmlFor="instrumentName">
-            Description:
-            <input
-              type="text"
-              id="instrumentName"
-              name="instrumentName"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              autoComplete='off'
-            />
-          </label>
-          <label htmlFor="instrumentNumber">
-            Number:
-            <input
-              type="text"
-              id="instrumentNumber"
-              name="instrumentNumber"
-              value={number}
-              onChange={(e) => setNumber(e.target.value)}
-              autoComplete='off'
-            />
-          </label>
-          <button type="button" onClick={handleInstrumentSearch}>Search</button>
-        </div>
-        {instrumentData.length > 0 && (
-          <div className="search-results">
-            <h2>Instrument Results</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th>Description</th>
-                  <th>Number</th>
-                  <th>Select</th>
-                </tr>
-              </thead>
-              <tbody>
-                {instrumentData.map((instrument, index) => (
-                  <tr key={instrument.id} className={selectedInstrumentRow === index ? 'selected' : ''}>
-                    <td>{instrument.description}</td>
-                    <td>{instrument.number}</td>
-                    <td>
-                      <button onClick={() => handleSelectInstrument(instrument.description, instrument.number, index)}>Select</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {userData.map((user, index) => (
+                    <tr key={user.id} className={selectedRow === index ? 'selected' : ''}>
+                      <td>{user.full_name}</td>
+                      <td>{user.grade_level}</td>
+                      <td>
+                        <button onClick={() => handleSelectUser(user.id, index)}>Select</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        )}
-      </div>
-      {instrumentError && <p>Error: {instrumentError}</p>}
-      <div className="submit-section">
-         <button
-            type="button"
-            onClick={handleSubmitCheckout}
-            disabled={!selectedInstrumentNumber || !selectedUserId || !selectedInstrumentDescription}
+          <div className="instrument-search-section">
+            <div className="instrument-search-box">
+              <h2>Instrument Search</h2>
+              <label htmlFor="instrumentName">
+                Description:
+                <input
+                  type="text"
+                  id="instrumentName"
+                  name="instrumentName"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  autoComplete='off'
+                />
+              </label>
+              <label htmlFor="instrumentNumber">
+                Number:
+                <input
+                  type="text"
+                  id="instrumentNumber"
+                  name="instrumentNumber"
+                  value={number}
+                  onChange={(e) => setNumber(e.target.value)}
+                  autoComplete='off'
+                />
+              </label>
+              <button type="button" onClick={handleInstrumentSearch}>Search</button>
+            </div>
+            <div className="search-results instrument-search-results">
+              <h2>Instrument Results</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th>Number</th>
+                    <th>Select</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {instrumentData.map((instrument, index) => (
+                    <tr key={instrument.id} className={selectedInstrumentRow === index ? 'selected' : ''}>
+                      <td>{instrument.description}</td>
+                      <td>{instrument.number}</td>
+                      <td>
+                        <button onClick={() => handleSelectInstrument(instrument.description, instrument.number, index)}>Select</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div className="submit-section">
+            <button
+              type="button"
+              onClick={handleSubmitCheckout}
+              disabled={!selectedInstrumentNumber || !selectedUserId || !selectedInstrumentDescription}
             >
-            Submit Checkout
-        </button>
+              Submit Checkout
+            </button>
+          </div>
+        </div>
+        {error&& <p>Error: {error}</p>}
       </div>
-      </div>
+      
       
     );
   }

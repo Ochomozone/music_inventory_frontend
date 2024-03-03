@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './Util.css';
 
 const fetchData = async (baseUrl, userName = '', userDivision = '', classValue = '') => {
   let url = `${baseUrl}`;
@@ -44,12 +45,10 @@ const UsersSearch = ({ baseUrl, onDataFetched }) => {
   };
 
   const handleClearFields = async () => {
-    // Reset the state
     setUserName('');
     setUserDivision('');
     setClassValue('');
 
-    // Fetch all data again
     const data = await fetchData(baseUrl);
     if (data) {
       onDataFetched(data);
@@ -57,43 +56,49 @@ const UsersSearch = ({ baseUrl, onDataFetched }) => {
   };
 
   return (
-    <div>
-      <label htmlFor="userName">
-        User Name:
-        <input
-          type="text"
-          id="userName"
-          name="userName"
-          value={userName}
-          onChange={(e) => setUserName(e.target.value)}
-          autoComplete='off'
-        />
-      </label>
-      <label htmlFor="userDivision">
-        User Division:
-        <input
-          type="text"
-          id="userDivision"
-          name="userDivision"
-          value={userDivision}
-          onChange={(e) => setUserDivision(e.target.value)}
-          autoComplete='off'
-        />
-      </label>
-      <label htmlFor="classValue">
-        Class (optional):
-        <input
-          type="text"
-          id="classValue"
-          name="classValue"
-          value={classValue}
-          onChange={(e) => setClassValue(e.target.value)}
-          autoComplete='off'
-        />
-      </label>
-      <button type="button" onClick={handleFetchData}>Search</button>
-      <button type="button" onClick={handleClearFields}>Clear</button>
-    </div>
+    <div className="container">
+      <div>
+       <label htmlFor="userName">User Name:</label>
+      </div>
+  <div>
+    <input
+      type="text"
+      id="userName"
+      name="userName"
+      value={userName}
+      onChange={(e) => setUserName(e.target.value)}
+      autoComplete='off'
+    />
+  </div>
+  <div>
+    <label htmlFor="classValue">Class:</label>
+  </div>
+  <div>
+    <input
+      type="text"
+      id="classValue"
+      name="classValue"
+      value={classValue}
+      onChange={(e) => setClassValue(e.target.value)}
+    />
+  </div>
+  <div>
+    <label htmlFor="classValue">Division:</label>
+  </div>
+  <div>
+    <input
+      type="text"
+      id="userDivision"
+      name="userDivision"
+      value={userDivision}
+      onChange={(e) => setUserDivision(e.target.value)}
+    />
+  </div>
+  <button type="button" onClick={handleFetchData}>Search</button>
+  <button type="button" onClick={handleClearFields}>Clear</button>
+</div>
+
+  
   );
 };
 

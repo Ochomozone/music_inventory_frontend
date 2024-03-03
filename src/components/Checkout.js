@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import CheckoutSearch from '../util/CheckoutSearch';
+import { NavLink } from 'react-router-dom';
 import './Styles.css';
 
 function Checkouts({baseUrl}) {
@@ -66,8 +67,12 @@ function Checkouts({baseUrl}) {
 
   return (
     <div className="container">
+      <div>
+      <NavLink to="/newcheckout">
+        <h1>Create New Checkout</h1>
+      </NavLink>
       <h1>Instrument Checkouts</h1>
-      <CheckoutSearch onDataFetched={handleDataFetched} baseUrl={baseUrl} onClear={handleClearFields}/>
+      <CheckoutSearch  className="navlink-button" onDataFetched={handleDataFetched} baseUrl={baseUrl} onClear={handleClearFields}/>
       <div className="table-container">
         <table className="table">
           <thead>
@@ -101,6 +106,7 @@ function Checkouts({baseUrl}) {
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );
