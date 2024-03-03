@@ -59,7 +59,7 @@ const UsersSearch = ({ baseUrl, onDataFetched }) => {
   return (
     <div>
       <label htmlFor="userName">
-        Name:
+        User Name:
         <input
           type="text"
           id="userName"
@@ -70,7 +70,7 @@ const UsersSearch = ({ baseUrl, onDataFetched }) => {
         />
       </label>
       <label htmlFor="userDivision">
-        Division:
+        User Division:
         <input
           type="text"
           id="userDivision"
@@ -81,7 +81,7 @@ const UsersSearch = ({ baseUrl, onDataFetched }) => {
         />
       </label>
       <label htmlFor="classValue">
-        Class:
+        Class (optional):
         <input
           type="text"
           id="classValue"

@@ -8,6 +8,7 @@ import Instruments from "./components/Instruments";
 import Checkouts from "./components/Checkout";
 import UsersComponent from "./components/UsersComponent";
 import NavigationBar from "./components/NavBar";
+import NewCheckout from "./components/NewCheckout";
 
 const baseUrl = 'http://localhost:4001';
 
@@ -24,6 +25,7 @@ function App() {
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
           <Route path="users" element={<UsersComponent baseUrl={`${baseUrl}/users`}/>} />
+          <Route path="/newcheckout" element={<NewCheckout baseUrl={baseUrl} />} />
         </Routes>
       </AuthProvider>
     </div>

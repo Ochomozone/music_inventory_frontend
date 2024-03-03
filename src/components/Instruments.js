@@ -39,6 +39,8 @@ function Instruments({ baseUrl }) {
     await fetchInstruments();
   };
 
+  
+
   if (loading) {
     return <p>Loading...</p>;
   }
