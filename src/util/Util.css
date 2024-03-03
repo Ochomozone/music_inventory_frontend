@@ -4,6 +4,21 @@
     grid-template-rows: auto auto auto auto;
     grid-gap: 10px;
   }
+
+  .navlink-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+  .navlink-button:hover {
+    background-color: #0056b3;
+  }
+  
   
   label, input {
     padding: 5px; 
