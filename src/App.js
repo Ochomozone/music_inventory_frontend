@@ -15,13 +15,13 @@ const baseUrl = 'http://localhost:4001';
 function App() {
   return (
     <div>
-      <AuthProvider>
+      <AuthProvider baseUrl={baseUrl}>
         <NavigationBar baseUrl={baseUrl} />
         <Routes>
         <Route path="/login" element={<Login />} />
           <Route path="/" element={<Home />} />
           <Route path="/instruments" element={<Instruments baseUrl={`${baseUrl}/instruments`} />} />
-          <Route path="/checkouts" element={<Checkouts baseUrl={`${baseUrl}/checkouts`} />} />
+          <Route path="/checkouts" element={<Checkouts baseUrl={baseUrl} />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
           <Route path="users" element={<UsersComponent baseUrl={`${baseUrl}/users`}/>} />

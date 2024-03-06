@@ -43,3 +43,36 @@ code {
 .table tbody tr:hover {
   background-color: #ddd;
 }
+/* NewCheckout.css */
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 50%;
+  /* height:150px; */
+  transform: translate(-50%, -50%);
+  background-color:#f2f2f2;
+  border: 1px solid #2208eb;
+  padding: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+}
+
+.popup-inner {
+  text-align: center;
+}
+
+.close-btn {
+  position: inherit;
+  color:blue;
+  font-size: medium;
+  width:fit-content;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.popup p {
+  margin: 0;
+}

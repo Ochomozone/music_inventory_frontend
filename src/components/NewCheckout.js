@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './NewCheckout.css';
+import PopupMessage from './PopupMessage';
 const fetchCheckoutData = async (baseUrl, description = '', number = '', userId = '') => {
     const url = `${baseUrl}/checkouts`;
     const body = JSON.stringify({ description, number, userId });
@@ -102,6 +103,8 @@ const NewCheckout = ({ baseUrl }) => {
     const [selectedInstrumentDescription, setSelectedInstrumentDescription] = useState('');
     const [selectedInstrumentNumber, setSelectedInstrumentNumber] = useState('');
     const [selectedInstrumentRow, setSelectedInstrumentRow] = useState(null);
+    const [checkoutMessage, setCheckoutMessage] = useState('');
+    const [showPopup, setShowPopup] = useState(false);
   
     const handleUserSearch = async () => {
       try {
@@ -148,15 +151,20 @@ const NewCheckout = ({ baseUrl }) => {
           if (!checkoutData) {
             throw new Error('Failed to submit checkout');
           }
-      
+          setCheckoutMessage(checkoutData.message);
+          setShowPopup(true); 
           setSelectedInstrumentNumber('');
           setSelectedInstrumentDescription('');
           setSelectedUserId('');
-      
           setInstrumentData([]);
           setUserData([]);
-      
-          alert('Checkout submitted successfully');
+          setDescription('');
+          setNumber('');
+          setUserName('');
+          setUserDivision('');
+          setClassValue('');
+          setSelectedRow(null);
+          setSelectedInstrumentRow(null);
         } catch (error) {
           console.error('Error submitting checkout:', error.message);
             setError(error.message);
@@ -169,9 +177,9 @@ const NewCheckout = ({ baseUrl }) => {
         <div className="container">
           <div className="search-section">
             <div className="search-box">
-              <h2>User Search</h2>
+              <h2>Search User</h2>
               <label htmlFor="userName">
-                User Name:
+                Name:
                 <input
                   type="text"
                   id="userName"
@@ -182,7 +190,7 @@ const NewCheckout = ({ baseUrl }) => {
                 />
               </label>
               <label htmlFor="userDivision">
-                User Division:
+                Division:
                 <input
                   type="text"
                   id="userDivision"
@@ -193,7 +201,7 @@ const NewCheckout = ({ baseUrl }) => {
                 />
               </label>
               <label htmlFor="classValue">
-                Class (optional):
+                Class:
                 <input
                   type="text"
                   id="classValue"
@@ -231,7 +239,7 @@ const NewCheckout = ({ baseUrl }) => {
           </div>
           <div className="instrument-search-section">
             <div className="instrument-search-box">
-              <h2>Instrument Search</h2>
+              <h2>Search Instrument</h2>
               <label htmlFor="instrumentName">
                 Description:
                 <input
@@ -290,6 +298,7 @@ const NewCheckout = ({ baseUrl }) => {
             </button>
           </div>
         </div>
+        {showPopup && <PopupMessage message={checkoutMessage} onClose={() => setShowPopup(false)} />}
         {error&& <p>Error: {error}</p>}
       </div>
       

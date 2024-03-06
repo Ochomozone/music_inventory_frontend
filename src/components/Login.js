@@ -8,6 +8,7 @@ function Login() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    console.log("Logging in...");
     setLoading(true);
     try {
       // Trigger the login action

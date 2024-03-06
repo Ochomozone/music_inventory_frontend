@@ -58,7 +58,7 @@ const UsersSearch = ({ baseUrl, onDataFetched }) => {
   return (
     <div className="container">
       <div>
-       <label htmlFor="userName">User Name:</label>
+       <label htmlFor="userName">Name:</label>
       </div>
   <div>
     <input

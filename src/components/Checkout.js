@@ -15,7 +15,7 @@ function Checkouts({baseUrl}) {
 
   const fetchCheckouts = async () => {
     try {
-      const response = await fetch(baseUrl);
+      const response = await fetch(`${baseUrl}/checkouts`);
       if (!response.ok) {
         throw new Error('Failed to fetch dispatches');
       }
@@ -43,7 +43,7 @@ function Checkouts({baseUrl}) {
     const confirmation = window.confirm(`Are you sure you want to turn in ${userName}'s ${description} number ${number}?`);
     if (confirmation) {
       try {
-        const response = await fetch(`http://localhost:4001/returns?instrumentId=${instrumentId}`, {
+        const response = await fetch(`${baseUrl}/returns?instrumentId=${instrumentId}`, {
           method: 'POST',
         });
         if (!response.ok) {
@@ -72,7 +72,7 @@ function Checkouts({baseUrl}) {
         <h1>Create New Checkout</h1>
       </NavLink>
       <h1>Instrument Checkouts</h1>
-      <CheckoutSearch  className="navlink-button" onDataFetched={handleDataFetched} baseUrl={baseUrl} onClear={handleClearFields}/>
+      <CheckoutSearch  className="navlink-button" onDataFetched={handleDataFetched} baseUrl={`${baseUrl}/checkouts`} onClear={handleClearFields}/>
       <div className="table-container">
         <table className="table">
           <thead>
