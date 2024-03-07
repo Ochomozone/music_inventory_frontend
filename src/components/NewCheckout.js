@@ -4,7 +4,6 @@ import PopupMessage from './PopupMessage';
 const fetchCheckoutData = async (baseUrl, description = '', number = '', userId = '') => {
     const url = `${baseUrl}/checkouts`;
     const body = JSON.stringify({ description, number, userId });
-    console.log('Body from fetchCheckoutData: ', url, body)
 
     try {
         const response = await fetch(url, {
@@ -43,8 +42,7 @@ const fetchUserData = async (baseUrl, userName = '', userDivision = '', classVal
   }
 
   if (params.toString()) {
-    url += `?${params.toString()}`;
-    console.log('URL:', url);
+    url += `?${params.toString()}`; 
   }
 
   try {
@@ -73,7 +71,6 @@ const fetchInstrumentData = async (baseUrl, instrumentName = '', instrumentNumbe
   
     if (params.toString()) {
       url += `?${params.toString()}`;
-      console.log('URL:', url);
     }
   
     try {
@@ -118,7 +115,6 @@ const NewCheckout = ({ baseUrl }) => {
     const handleSelectUser = (userId, index) => {
       setSelectedUserId(userId);
       setSelectedRow(index);
-      console.log('Selected user:', userId);
     };
 
     const handleInstrumentSearch = async () => {
@@ -134,7 +130,6 @@ const NewCheckout = ({ baseUrl }) => {
         setSelectedInstrumentDescription(instrumentDescription);
         setSelectedInstrumentNumber(instrumentNumber);
         setSelectedInstrumentRow(index);
-        console.log('Selected instrument:', instrumentDescription, instrumentNumber);
       };
 
       const handleSubmitCheckout = async () => {
