@@ -28,11 +28,13 @@ function App() {
   });
 
   useEffect(() => {
+    // Check if profile data is available in sessionStorage
     const storedProfile = sessionStorage.getItem('profile');
     if (storedProfile) {
       setProfile(JSON.parse(storedProfile));
     }
 
+    // Fetch user profile data if user is authenticated
     if (user) {
       axios
         .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
@@ -43,6 +45,7 @@ function App() {
         })
         .then((res) => {
           setProfile(res.data);
+          // Store profile data in sessionStorage
           sessionStorage.setItem('profile', JSON.stringify(res.data));
         })
         .catch((err) => console.log(err));
@@ -52,6 +55,7 @@ function App() {
   const logOut = () => {
     googleLogout();
     setProfile(null);
+    // Clear profile data from sessionStorage upon logout
     sessionStorage.removeItem('profile');
   };
 
