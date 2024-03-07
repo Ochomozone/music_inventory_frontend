@@ -38,7 +38,7 @@ function UsersComponent({ baseUrl }) {
   }
 
   return (
-    <div className="container">
+    <div >
       <div>
       <h1>Users</h1>
       <UsersSearch baseUrl={baseUrl} onDataFetched={handleDataFetched} />

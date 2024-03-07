@@ -50,7 +50,7 @@ function Instruments({ baseUrl }) {
   }
 
   return (
-    <div className="container">
+    <div /*className="container"*/>
       <div>
         <h1>Instruments</h1>
        

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CheckoutSearch from '../util/CheckoutSearch';
 import { NavLink } from 'react-router-dom';
-import './Styles.css';
+// import './Styles.css';
 
 function Checkouts({baseUrl}) {
   const [dispatches, setCheckouts] = useState([]);
@@ -66,7 +66,7 @@ function Checkouts({baseUrl}) {
   }
 
   return (
-    <div className="container">
+    <div /*className="container"*/>
       <div>
       <NavLink to="/newcheckout">
         <h1>Create New Checkout</h1>
