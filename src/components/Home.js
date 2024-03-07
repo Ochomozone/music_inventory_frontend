@@ -1,18 +1,18 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import "./Styles.css"; 
+import React from 'react';
 
-function Home() {
+const Home = ({ profile, login }) => {
+  const handleLogin = () => {
+    if (login) {
+      login(); // Call the login function passed as a prop
+    }
+  };
+
   return (
-    <div className="container">
-      <h1>Music Instrument Inventory System</h1>
-      <div className="links">
-        <Link to="/login">Login In with your google credentials</Link>
-        <Link to="/about">Click to view our about page</Link>
-        <Link to="/contact">Click to view our contact page</Link>
-      </div>
+    <div>
+      <h1>Welcome to the Homepage</h1>
+      {!profile && <button onClick={handleLogin}>Log In</button>}
     </div>
   );
-}
+};
 
 export default Home;
