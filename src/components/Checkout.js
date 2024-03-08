@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import CheckoutSearch from '../util/CheckoutSearch';
 import { NavLink } from 'react-router-dom';
-// import './Styles.css';
 
 function Checkouts({baseUrl}) {
   const [dispatches, setCheckouts] = useState([]);

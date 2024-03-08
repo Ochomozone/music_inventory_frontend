@@ -15,55 +15,57 @@ import History from './components/History';
 const baseUrl = 'http://localhost:4001';
 
 function App() {
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const navigate = useNavigate();
 
-  const login = useGoogleLogin({
-    onSuccess: (codeResponse) => {
-      setUser(codeResponse);
-      navigate('/instruments');
-    },
-    onError: (error) => console.log('Login Failed:', error)
-  });
+  // Function to handle user login
+  const handleLogin = () => {
+    login();
+  };
 
+  // Function to handle user logout
+  const handleLogout = () => {
+    googleLogout();
+    setProfile(null);
+    navigate('/');
+    sessionStorage.removeItem('profile');
+  };
+
+  // Effect to fetch user profile data on login
   useEffect(() => {
-    // Check if profile data is available in sessionStorage
     const storedProfile = sessionStorage.getItem('profile');
     if (storedProfile) {
       setProfile(JSON.parse(storedProfile));
     }
+  }, []);
 
-    // Fetch user profile data if user is authenticated
-    if (user) {
+  // Google login hook
+  const login = useGoogleLogin({
+    onSuccess: (codeResponse) => {
+      // setUser(codeResponse);
       axios
-        .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
+        .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${codeResponse.access_token}`, {
           headers: {
-            Authorization: `Bearer ${user.access_token}`,
+            Authorization: `Bearer ${codeResponse.access_token}`,
             Accept: 'application/json'
           }
         })
         .then((res) => {
           setProfile(res.data);
-          // Store profile data in sessionStorage
           sessionStorage.setItem('profile', JSON.stringify(res.data));
+          navigate('/instruments');
         })
         .catch((err) => console.log(err));
-    }
-  }, [user]);
-
-  const logOut = () => {
-    googleLogout();
-    setProfile(null);
-    // Clear profile data from sessionStorage upon logout
-    sessionStorage.removeItem('profile');
-  };
+    },
+    onError: (error) => console.log('Login Failed:', error)
+  });
 
   return (
     <div>
-      <NavigationBar baseUrl={baseUrl} profile={profile} logOut={logOut} />
+      <NavigationBar baseUrl={baseUrl} profile={profile} logOut={handleLogout} />
       <Routes>
-        <Route path="/" element={<Home profile={profile} login={login} />} />
+        <Route path="/" element={<Home profile={profile} login={handleLogin} logout={handleLogout}/>} />
         {profile && (
           <>
             <Route path="/instruments" element={<Instruments baseUrl={`${baseUrl}/instruments`} />} />

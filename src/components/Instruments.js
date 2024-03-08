@@ -70,21 +70,21 @@ function Instruments({ baseUrl }) {
             </tr>
           </thead>
           <tbody>
-            {instruments.length > 0 ? (
-              instruments.map(instrument => (
-                <tr key={instrument.id}>
-                  <td>{instrument.description}</td>
-                  <td>{instrument.number}</td>
-                  <td>{instrument.make}</td>
-                  <td>{instrument.model}</td>
-                  <td>{instrument.location}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5">No instruments found.</td>
-              </tr>
-            )}
+          {instruments.length > 0 ? (
+  instruments.map(instrument => (
+    <tr key={instrument.id}>
+      <td>{instrument.description}</td>
+      <td>{instrument.number}</td>
+      <td>{instrument.make}</td>
+      <td>{instrument.model}</td>
+      <td>{instrument.location ? instrument.location : instrument.user_name}</td>
+    </tr>
+  ))
+) : (
+  <tr>
+    <td colSpan="5">No instruments found.</td>
+  </tr>
+)}
           </tbody>
         </table>
         </div>

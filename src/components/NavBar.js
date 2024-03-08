@@ -57,6 +57,11 @@ const Navbar = ({ profile, logOut }) => {
               Checkout Instrument
             </NavLink>
           </li>
+          <li>
+            <NavLink to="/history" className="navbar-link">
+              Logs
+            </NavLink>
+          </li>
         </ul>
       </div>
     </nav>

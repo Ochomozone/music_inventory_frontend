@@ -1,9 +1,15 @@
 import React from 'react';
 
-const Home = ({ profile, login }) => {
+const Home = ({ profile, login, logOut }) => {
   const handleLogin = () => {
     if (login) {
-      login(); // Call the login function passed as a prop
+      login(); 
+    }
+  };
+
+  const handleLogOut = () => {
+    if (logOut) {
+      logOut(); 
     }
   };
 
@@ -11,8 +17,15 @@ const Home = ({ profile, login }) => {
     <div>
       <h1>Welcome to the Homepage</h1>
       {!profile && <button onClick={handleLogin}>Log In</button>}
+      {profile && (
+        <div>
+          <p>You are logged in as {profile.name}</p>
+          <button onClick={handleLogOut}>Log Out</button>
+        </div>
+      )}
     </div>
   );
+
 };
 
 export default Home;
