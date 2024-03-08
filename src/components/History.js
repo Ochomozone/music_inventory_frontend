@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import '../util/Util.css';
-// import './Styles.css';
 
 const formatDate = (timestamp) => {
   const date = new Date(timestamp);
@@ -51,7 +50,7 @@ const History = ({ baseUrl }) => {
   const [fetchedData, setFetchedData] = useState(null);
 
   useEffect(() => {
-    fetchDataAndUpdate(); // Fetch data when component mounts
+    fetchDataAndUpdate();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
