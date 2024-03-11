@@ -3,7 +3,7 @@ import CheckoutSearch from '../util/CheckoutSearch';
 import { NavLink } from 'react-router-dom';
 
 function Checkouts({baseUrl}) {
-  const [dispatches, setCheckouts] = useState([]);
+  const [dispatches, setDispatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -19,7 +19,7 @@ function Checkouts({baseUrl}) {
         throw new Error('Failed to fetch dispatches');
       }
       const data = await response.json();
-      setCheckouts(data);
+      setDispatches(data);
       setLoading(false);
     } catch (error) {
       setError(error.message);
@@ -28,13 +28,13 @@ function Checkouts({baseUrl}) {
   };
 
   const handleDataFetched = (data) => {
-    setCheckouts(data);
+    setDispatches(data);
   };
 
   const handleClearFields = async () => {
     setLoading(true);
     setError(null);
-    setCheckouts([]);
+    setDispatches([]);
     await fetchCheckouts();
   };
 

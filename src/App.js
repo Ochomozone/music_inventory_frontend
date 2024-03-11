@@ -73,7 +73,6 @@ function App() {
     .then(data => {
       setProfile(data);
       sessionStorage.setItem('profile', JSON.stringify(data));
-      console.log(`User profile: ${JSON.stringify(data)}`)
     })
     .catch(error => {
       console.error('Error fetching user profile:', error);
@@ -90,9 +89,9 @@ function App() {
 
   return (
     <div>
-      <NavigationBar baseUrl={baseUrl} profile={profile} logOut={handleLogout} />
+      {profile && <NavigationBar baseUrl={baseUrl} profile={profile} logOut={handleLogout} />}
       <Routes>
-        <Route path="/" element={<Home profile={profile} login={login} logout={handleLogout} />} />
+        <Route path="/" element={<Home baseUrl={baseUrl} profile={profile} login={login} logOut={handleLogout} />} />
         {profile && (
           <>
             <Route path="/instruments" element={<Instruments baseUrl={`${baseUrl}/instruments`} />} />
