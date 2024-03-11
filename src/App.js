@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import NavigationBar from './components/NavBar';
 import Home from './components/Home';
 import About from './components/About';
@@ -17,53 +17,82 @@ function App() {
   const [profile, setProfile] = useState(null);
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // Implement your logout logic
-  };
-
-  const handleLogin = async (googleResponse) => {
-    try {
-      const idToken = googleResponse.getAuthResponse().id_token;
-
-      // Send the id_token to your backend
-      const userInfo = await sendIdTokenToBackend(idToken);
-      setProfile(userInfo);
-      sessionStorage.setItem('profile', JSON.stringify(userInfo));
-      navigate('/instruments');
-    } catch (error) {
-      console.error('Error during Google login:', error);
-    }
-  };
-
-  const sendIdTokenToBackend = async (idToken) => {
-    try {
-      const response = await axios.post(`${baseUrl}/auth`, { idToken });
-      return response.data;
-    } catch (error) {
-      console.error('Error sending id_token to backend:', error);
-      throw new Error('Failed to send id_token to backend');
-    }
-  };
+  // Google login hook
+  const login = useGoogleLogin({
+    onSuccess: (codeResponse) => {
+      // Send the codeResponse to the backend to get the user profile
+      sendTokenToBackend(codeResponse.access_token);
+    },
+    onError: (error) => console.log('Login Failed:', error)
+  });
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/user/profile`);
-        setProfile(response.data);
-        sessionStorage.setItem('profile', JSON.stringify(response.data));
-      } catch (error) {
-        console.error('Error fetching user profile:', error);
-      }
-    };
-
-    fetchUserProfile();
+    const storedProfile = sessionStorage.getItem('profile');
+    if (storedProfile) {
+      setProfile(JSON.parse(storedProfile));
+    }
   }, []);
+
+  // Function to send the access token to the backend
+  const sendTokenToBackend = (accessToken) => {
+    fetch(`${baseUrl}/auth/google`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
+      },
+    })
+    .then(response => {
+      if (response.ok) {
+        // Save the access token in local storage
+        localStorage.setItem('access_token', accessToken);
+        fetchUserProfile();
+      } else {
+        console.error('Failed to send access token to the backend');
+      }
+    })
+    .catch(error => {
+      console.error('Error sending access token:', error);
+    });
+  };
+
+  // Function to fetch user profile from the backend
+  const fetchUserProfile = () => {
+    fetch(`${baseUrl}/user/profile`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+      }
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error('Failed to fetch user profile');
+      }
+    })
+    .then(data => {
+      setProfile(data);
+      sessionStorage.setItem('profile', JSON.stringify(data));
+      console.log(`User profile: ${JSON.stringify(data)}`)
+    })
+    .catch(error => {
+      console.error('Error fetching user profile:', error);
+    });
+  };
+
+  // Function to handle user logout
+  const handleLogout = () => {
+    googleLogout();
+    setProfile(null);
+    navigate('/');
+    sessionStorage.removeItem('profile');
+  };
 
   return (
     <div>
       <NavigationBar baseUrl={baseUrl} profile={profile} logOut={handleLogout} />
       <Routes>
-        <Route path="/" element={<Home profile={profile} login={handleLogin} logout={handleLogout} />} />
+        <Route path="/" element={<Home profile={profile} login={login} logout={handleLogout} />} />
         {profile && (
           <>
             <Route path="/instruments" element={<Instruments baseUrl={`${baseUrl}/instruments`} />} />
