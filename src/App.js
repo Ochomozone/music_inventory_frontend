@@ -3,8 +3,6 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import NavigationBar from './components/NavBar';
 import Home from './components/Home';
-import About from './components/About';
-import Contact from './components/Contact';
 import Instruments from './components/Instruments';
 import Checkouts from './components/Checkout';
 import UsersComponent from './components/UsersComponent';
@@ -101,8 +99,6 @@ function App() {
             <Route path="/history" element={<History baseUrl={baseUrl} />} />
           </>
         )}
-        <Route path="about" element={<About />} />
-        <Route path="contact" element={<Contact />} />
       </Routes>
     </div>
   );

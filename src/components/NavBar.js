@@ -37,6 +37,11 @@ const Navbar = ({ profile, logOut }) => {
       </div>
       <div className="navbar-right">
         <ul>
+        <li>
+            <NavLink to="/" className="navbar-link">
+              Home
+            </NavLink>
+          </li>
           <li>
             <NavLink to="/instruments" className="navbar-link">
               Instruments
