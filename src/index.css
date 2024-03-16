@@ -16,21 +16,70 @@ code {
     monospace;
 }
 
+.page {
+  display: grid;
+  grid-template-columns: 1fr; /* one column */
+  gap: 20px; /* space between grid items */
+  justify-content: center; /* center align */
+}
+.container {
+  width: auto; 
+  display: grid;
+  grid-template-columns: 1fr; 
+  gap: 0px; 
+  justify-content: center;
+  align-content: center;
+}
+.container-pair {
+  display: flex;
+  align-items: center;
+  margin:10px 0;
+}
+
+.left-container,
+.right-container {
+  flex: 1; /* Take up equal space */
+}
+
+.left-container {
+  display: flex;
+  justify-content: flex-end;
+}
+.right-container {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.container-pair > * {
+  margin: 0;
+}
+
+
+
+
+.centered-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+}
+
 .table-container {
   width: 100%;
   margin: 0 auto;
 }
 
 .table {
-  width: 100%;
   border-collapse: collapse;
+  min-width: 70%;
+  /* width: fit-content; */
+  margin: 10px auto;
 }
 
 .table th, .table td {
   padding: 8px;
   text-align: left;
   border-bottom: 1px solid #ddd;
-  width:fit-content;
 }
 
 .table th {
@@ -44,7 +93,7 @@ code {
 .table tbody tr:hover {
   background-color: #ddd;
 }
-/* NewCheckout.css */
+
 
 .popup {
   position: fixed;
@@ -77,3 +126,68 @@ code {
 .popup p {
   margin: 0;
 }
+
+
+
+.navlink-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.navlink-button:hover {
+  background-color: #0056b3;
+}
+
+
+label, input {
+  padding: 5px; 
+}
+
+input {
+  width: calc(100% - 10px);
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  min-width: min-content; /* Set minimum width to fit content */
+  padding: 10px 20px; /* Adjust padding as needed */
+  margin: 5px 10px; /* Adjust margins as needed */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #0931fa;
+  color: #fff;
+  max-width: 200px; /* Set a maximum width for the buttons */
+}
+.create-checkout-button {
+  font-size: 24px;
+  padding: 20px 40px;
+  background-color: #0931fa;
+  color: #fff;
+  border:gold;
+  border-style: groove;
+  border-radius: 26px;
+  cursor: pointer;
+  position: fixed;
+  top: 80px;
+  left: 20px;
+  z-index: 999;
+}
+
+
+button:hover {
+  background-color: #0056b3;
+}
+
+button:disabled {
+  background-color:rgb(241, 236, 230);
+  color:azure;
+  border-color:rgba(0, 0, 0, 0.1);
+}
+

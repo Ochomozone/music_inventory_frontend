@@ -1,19 +1,14 @@
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(2, auto);
   width: 100%;
   padding: 1rem;
   background-color: #0a24e9;
   color: white;
+  justify-items: center; /* center items horizontally */
 }
 
-.navbar-left {
-  display: flex;
-  align-items: center;
-}
-
-.navbar-right {
+.navbar-left, .navbar-right {
   display: flex;
   align-items: center;
 }
@@ -52,7 +47,6 @@
   }
 }
 
-
 .navbar-link {
   text-decoration: none;
   color: white;
@@ -73,6 +67,4 @@
   .navbar {
     justify-content: space-between;
   }
-
 }
-

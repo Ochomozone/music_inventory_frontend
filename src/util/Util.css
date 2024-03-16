@@ -1,47 +1,7 @@
-.container {
+/* .container {
     display: flex;
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto auto;
     align-items: center;
     grid-gap: 10px;
-  }
-
-  .navlink-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: #fff;
-    text-decoration: none;
-    cursor: pointer;
-  }
-  
-  .navlink-button:hover {
-    background-color: #0056b3;
-  }
-  
-  
-  label, input {
-    padding: 5px; 
-  }
-  
-  input {
-    width: calc(100% - 10px);
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  button {
-    width: 100%;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    background-color: #007bff;
-    color: #fff;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
+  } */

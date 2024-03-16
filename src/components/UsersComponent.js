@@ -38,9 +38,10 @@ function UsersComponent({ baseUrl }) {
   }
 
   return (
-    <div >
-      <div>
+    <div  className='container'>
+      <div className='centered-text'>
       <h1>Users</h1>
+      </div>
       <UsersSearch baseUrl={baseUrl} onDataFetched={handleDataFetched} />
       <div className="table-container">
         <table className="table">
@@ -70,7 +71,7 @@ function UsersComponent({ baseUrl }) {
           </tbody>
         </table>
         </div>
-      </div>
+     
     </div>
   );
 }

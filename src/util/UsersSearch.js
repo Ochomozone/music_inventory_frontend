@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './Util.css';
+import '../index.css';
 
 const fetchData = async (baseUrl, userName = '', userDivision = '', classValue = '') => {
   let url = `${baseUrl}`;
@@ -57,10 +57,11 @@ const UsersSearch = ({ baseUrl, onDataFetched }) => {
 
   return (
     <div className="container">
-      <div>
+      <div className='container-pair'>
+      <div className='left-container'>
        <label htmlFor="userName">Name:</label>
       </div>
-  <div>
+  <div className='right-container'>
     <input
       type="text"
       id="userName"
@@ -69,11 +70,13 @@ const UsersSearch = ({ baseUrl, onDataFetched }) => {
       onChange={(e) => setUserName(e.target.value)}
       autoComplete='off'
     />
+    </div>
   </div>
-  <div>
+  <div className='container-pair'>
+  <div className='left-container'>
     <label htmlFor="classValue">Class:</label>
   </div>
-  <div>
+  <div className='right-container'>
     <input
       type="text"
       id="classValue"
@@ -81,11 +84,13 @@ const UsersSearch = ({ baseUrl, onDataFetched }) => {
       value={classValue}
       onChange={(e) => setClassValue(e.target.value)}
     />
+    </div>
   </div>
-  <div>
+  <div className='container-pair'>
+  <div className='left-container'>
     <label htmlFor="classValue">Division:</label>
   </div>
-  <div>
+  <div className= 'right-container'>
     <input
       type="text"
       id="userDivision"
@@ -93,9 +98,15 @@ const UsersSearch = ({ baseUrl, onDataFetched }) => {
       value={userDivision}
       onChange={(e) => setUserDivision(e.target.value)}
     />
+    </div>
   </div>
+  <div className='container-pair'>
+    <div className='left-container'>
   <button type="button" onClick={handleFetchData}>Search</button>
+  </div><div className='right-container'>
   <button type="button" onClick={handleClearFields}>Clear</button>
+  </div>
+  </div>
 </div>
 
   

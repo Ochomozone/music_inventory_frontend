@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import InstrumentFetcher from '../util/InstrumentSearch';
+import LostAndFoundSearch from '../util/lostAndFoundSearch';
+import '../index.css';
 // import './Styles.css';
 
-function Instruments({ baseUrl }) {
+function Instruments({ baseUrl, profile }) {
   const [instruments, setInstruments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,7 +16,7 @@ function Instruments({ baseUrl }) {
 
   const fetchInstruments = async () => {
     try {
-      const response = await fetch(baseUrl); 
+      const response = await fetch(`${baseUrl}/instruments`); 
       if (!response.ok) {
         throw new Error('Failed to fetch instruments');
       }
@@ -50,13 +52,13 @@ function Instruments({ baseUrl }) {
   }
 
   return (
-    <div /*className="container"*/>
+    <div className="container">
       <div>
         <h1>Instruments</h1>
        
-      <h2>Search Instruments</h2>
+      <h2 className='centered-text'>Search Instruments</h2>
       
-      <InstrumentFetcher onDataFetched={handleDataFetched} baseUrl={baseUrl} onClear={handleClearFields}/>
+      <InstrumentFetcher onDataFetched={handleDataFetched} baseUrl={`${baseUrl}/instruments`} onClear={handleClearFields}/>
     
       <div className="table-container">
         <table className="table">
@@ -67,6 +69,7 @@ function Instruments({ baseUrl }) {
               <th>Make</th>
               <th>Model</th>
               <th>Location</th>
+              <th>Missing?</th>
             </tr>
           </thead>
           <tbody>
@@ -78,6 +81,12 @@ function Instruments({ baseUrl }) {
       <td>{instrument.make}</td>
       <td>{instrument.model}</td>
       <td>{instrument.location ? instrument.location : instrument.user_name}</td>
+      <td>
+          <LostAndFoundSearch
+          baseUrl={baseUrl}
+          itemId={instrument.id}
+          />
+      </td>
     </tr>
   ))
 ) : (

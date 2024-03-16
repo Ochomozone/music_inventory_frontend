@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import InstrumentFetcher from '../util/VanillaInstrumentSearch';
+import LostAndFoundSearch from '../util/lostAndFoundSearch';
+import '../index.css';
 
 const Home = ({ profile, login, baseUrl }) => {
   const [dispatches, setDispatches] = useState([]);
@@ -45,13 +48,16 @@ const Home = ({ profile, login, baseUrl }) => {
   };
 
   return (
-    <div>
+    <div className='page'>
+      <div className='Container'>
       <h1>Music Inventory System</h1>
+      <h2 className='centered-text'>Lost and Found</h2>
+      </div>
+      <InstrumentFetcher  baseUrl={baseUrl} profile={profile}/>
       {!profile && <button onClick={handleLogin}>Log In</button>}
       {profile && (
         <div>
-          <h2>Instrument Assigned To You:</h2>
-          {/* <button onClick={handleLogOut}>Log out</button> */}
+          <h2 className='centered-text'>Instruments Assigned To You:</h2>
           {error && (
             <div className="popup">
               <div className="popup-content">
@@ -70,7 +76,7 @@ const Home = ({ profile, login, baseUrl }) => {
                   <th>Number</th>
                   <th>Make</th>
                   <th>Serial</th>
-                  <th>Actions</th>
+                  <th>Missing? </th>
                 </tr>
               </thead>
               <tbody>
@@ -81,10 +87,17 @@ const Home = ({ profile, login, baseUrl }) => {
                       <td>{instrument.number}</td>
                       <td>{instrument.make}</td>
                       <td>{instrument.serial}</td>
+                      <td>
+                      <LostAndFoundSearch
+                          baseUrl={baseUrl}
+                          itemId={instrument.id}
+                          profile={profile}
+                        />
+                      </td>
                     </tr>
                   ))
                 ) : (
-                  <tr>
+                  <tr className='centered-text'>
                     <td colSpan="6">No Instruments assigned to you.</td>
                   </tr>
                 )}

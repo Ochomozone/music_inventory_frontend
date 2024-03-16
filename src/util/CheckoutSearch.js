@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../index.css';
 
 const fetchData = async (baseUrl, userName = '', description = '', number = '') => {
   let url = `${baseUrl}`;
@@ -59,46 +60,60 @@ const CheckoutSearch = ({ onDataFetched, baseUrl }) => {
 
   return (
     <div className="container">
-      <div >
+      <div className='container-pair'>
+      <div className='left-container'>
         <label htmlFor="userName">Name:</label>
       </div>
-      <div >
+      <div className='right-container'>
         <input
           type="text"
           id="userName"
           name="userName"
           value={userName}
           onChange={(e) => setUserName(e.target.value)}
+          placeholder='Enter Name'
           autoComplete='off'
         />
+        </div>
       </div>
-      <div >
+      <div className='container-pair'>
+      <div className='left-container'>
         <label htmlFor="instrumentDescription">Instrument Description :</label>
       </div>
-      <div >
+      <div className='right-container'>
         <input
           type="text"
           id="instrumentDescription"
           name="instrumentDescription"
           value={description}
+          placeholder='eg. Guitar, Violin, etc.'
           onChange={(e) => setDescription(e.target.value)}
         />
       </div>
-      <div >
+      </div>
+      <div className='container-pair'>
+      <div className='left-container'>
         <label htmlFor="instrumentNumber">Instrument Number :</label>
       </div>
-      <div >
+      <div className='right-container'>
         <input
           type="text"
           id="instrumentNumber"
           name="instrumentNumber"
+          placeholder='Enter Instrument Number'
           value={number}
           onChange={(e) => setNumber(e.target.value)}
         />
       </div>
-      
+      </div>
+      <div className='container-pair'>
+        <div className='left-container'>
     <button type="button" onClick={handleFetchData}>Search</button>
+    </div>
+    <div className='right-container'>
     <button type="button" onClick={handleClearFields}>Clear</button>
+    </div>
+    </div>
  
 </div>
 

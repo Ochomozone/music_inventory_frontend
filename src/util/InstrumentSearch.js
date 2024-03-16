@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import './Util.css';
+// import './Util.css';
+import '../index.css';
 
 const fetchData = async (baseUrl, number = '', description = '') => {
     let url = `${baseUrl}`;
@@ -55,10 +56,11 @@ const InstrumentFetcher = ({ onDataFetched, baseUrl }) => {
 
   return (
     <div className="container">
-      <div>
+      <div className='container-pair'>
+      <div className='left-container'>
         <label htmlFor="InstrumentDescription">Description:</label>
       </div>
-        <div>
+        <div className='right-container'>
           <input
             id="InstrumentDescription"
             name="InstrumentDescription"
@@ -67,10 +69,12 @@ const InstrumentFetcher = ({ onDataFetched, baseUrl }) => {
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
-      <div >
+        </div>
+        <div className='container-pair'>
+      <div className='left-container'>
         <label htmlFor="InstrumentNumber">Number (optional):</label>
       </div>
-      <div>
+      <div className='right-container'>
     <input
       id="InstrumentNumber"
       name="InstrumentNumber"
@@ -79,8 +83,15 @@ const InstrumentFetcher = ({ onDataFetched, baseUrl }) => {
       onChange={(e) => setNumber(e.target.value)}
     />
     </div>
+    </div>
+    <div className='container-pair'>
+      <div className='left-container'>
     <button type="button" onClick={handleFetchData}>Search</button>
+    </div>
+    <div className='right-container'>
     <button type="button" onClick={handleClearFields}>Clear</button>
+    </div>
+    </div>
 </div>
 
 

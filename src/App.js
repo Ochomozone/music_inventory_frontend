@@ -92,11 +92,11 @@ function App() {
         <Route path="/" element={<Home baseUrl={baseUrl} profile={profile} login={login} logOut={handleLogout} />} />
         {profile && (
           <>
-            <Route path="/instruments" element={<Instruments baseUrl={`${baseUrl}/instruments`} />} />
-            <Route path="/checkouts" element={<Checkouts baseUrl={baseUrl} />} />
-            <Route path="/users" element={<UsersComponent baseUrl={`${baseUrl}/users`} />} />
-            <Route path="/newcheckout" element={<NewCheckout baseUrl={baseUrl} />} />
-            <Route path="/history" element={<History baseUrl={baseUrl} />} />
+            <Route path="/instruments" element={<Instruments baseUrl={baseUrl} profile={profile} />} />
+            <Route path="/checkouts" element={<Checkouts baseUrl={baseUrl} profile={profile}/>} />
+            <Route path="/users" element={<UsersComponent baseUrl={`${baseUrl}/users`} profile={profile}/>} />
+            <Route path="/newcheckout" element={<NewCheckout baseUrl={baseUrl} profile={profile}/>} />
+            <Route path="/history" element={<History baseUrl={baseUrl} profile={profile}/>} />
           </>
         )}
       </Routes>

@@ -16,6 +16,12 @@ const Navbar = ({ profile, logOut }) => {
     };
   }, []);
 
+  const showLogsLink = ['INVENTORY MANAGER', 'ADMINISTRATION'].includes(profile.role);
+  const showNewCheckoutLink = ['INVENTORY MANAGER', 'MUSIC TEACHER'].includes(profile.role);
+  const showUsersLink = ['INVENTORY MANAGER', 'MUSIC TEACHER', 'MUSIC TA', 'ADMINISTRATION'].includes(profile.role);
+  const showInstrumentsLink = ['INVENTORY MANAGER', 'MUSIC TEACHER', 'ADMINISTRATION'].includes(profile.role);
+  const showCheckoutsLink = ['INVENTORY MANAGER', 'MUSIC TEACHER', 'MUSIC TA', 'ADMINISTRATION'].includes(profile.role);
+
   return (
     <nav className={`navbar ${isMobile ? 'mobile' : ''}`}>
       <div className="navbar-left">
@@ -42,31 +48,41 @@ const Navbar = ({ profile, logOut }) => {
               Home
             </NavLink>
           </li>
+          {showInstrumentsLink && (
           <li>
             <NavLink to="/instruments" className="navbar-link">
               Instruments
             </NavLink>
           </li>
+          )}
+          {showCheckoutsLink && (
           <li>
             <NavLink to="/checkouts" className="navbar-link">
               Checkouts
             </NavLink>
           </li>
+           )}
+          {showUsersLink && (
           <li>
             <NavLink to="/users" className="navbar-link">
               Users
             </NavLink>
           </li>
+            )}
+          {showNewCheckoutLink && (
           <li>
             <NavLink to="/newcheckout" className="navbar-link">
               Checkout Instrument
             </NavLink>
           </li>
-          <li>
-            <NavLink to="/history" className="navbar-link">
-              Logs
-            </NavLink>
-          </li>
+           )}
+          {showLogsLink && (
+            <li>
+              <NavLink to="/history" className="navbar-link">
+                Logs
+              </NavLink>
+            </li>
+          )}
         </ul>
       </div>
     </nav>
