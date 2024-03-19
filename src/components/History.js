@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import '../util/Util.css';
+import { ViewLogs } from '../util/Permissions'; 
+import Unauthorized from './Unauthorized';
+// import '../util/Util.css';
+import '../index.css';
 
 const formatDate = (timestamp) => {
   const date = new Date(timestamp);
@@ -43,16 +46,17 @@ const fetchData = async (baseUrl, userName = '', description = '', number = '') 
   }
 };
 
-const History = ({ baseUrl }) => {
+const History = ({ baseUrl, profile }) => {
   const [userName, setUserName] = useState('');
   const [description, setDescription] = useState('');
   const [number, setNumber] = useState('');
   const [fetchedData, setFetchedData] = useState(null);
+  const canViewLogs = ViewLogs(profile);
 
   useEffect(() => {
     fetchDataAndUpdate();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchedData]);
 
   const fetchDataAndUpdate = async () => {
     const data = await fetchData(baseUrl, userName, description, number);
@@ -61,22 +65,25 @@ const History = ({ baseUrl }) => {
     }
   };
 
-  const handleFetchData = async () => {
-    fetchDataAndUpdate();
-  };
+  // const handleFetchData = async () => {
+  //   fetchDataAndUpdate();
+  // };
 
-  const handleClearFields = async () => {
-    setUserName('');
-    setDescription('');
-    setNumber('');
-    fetchDataAndUpdate();
-  };
+  // const handleClearFields = async () => {
+  //   setUserName('');
+  //   setDescription('');
+  //   setNumber('');
+  //   fetchDataAndUpdate();
+  // };
 
   return (
     <div >
-      <div>
-        <div>
+     {canViewLogs ? ( <div className='container'>
+      <div className='container-pair'>
+        <div className='left-container'>
         <label htmlFor="description">Description:</label>
+      </div>
+        <div className='right-container'>
         <input
           type="text"
           id="description"
@@ -86,8 +93,12 @@ const History = ({ baseUrl }) => {
           autoComplete='off'
         />
       </div>
-      <div>
+      </div>
+      {description &&(<div className='container-pair'>
+        <div className='left-container'>
         <label htmlFor="number">Number:</label>
+        </div>
+        <div className='right-container'>
         <input
           type="text"
           id="number"
@@ -96,9 +107,13 @@ const History = ({ baseUrl }) => {
           onChange={(e) => setNumber(e.target.value)}
           autoComplete='off'
         />
-      </div>
-      <div>
+        </div>
+      </div>)}
+      <div className='container-pair'>
+        <div className='left-container'>
         <label htmlFor="userName">Name:</label>
+        </div>
+        <div className='right-container'>
         <input
           type="text"
           id="userName"
@@ -107,12 +122,15 @@ const History = ({ baseUrl }) => {
           onChange={(e) => setUserName(e.target.value)}
           autoComplete='off'
         />
+        </div>
       </div>
       <div className="container">
-      <button type="button" onClick={handleFetchData}>Search</button>
-      <button type="button" onClick={handleClearFields}>Clear</button>
+      {(description || number || userName) &&(  <div className='centered-text'>
+      {/* <button type="button" onClick={handleFetchData}>Search</button> */}
+      {/* <button type="button" onClick={handleClearFields}>Clear</button> */}
+      </div>)}
       </div>
-      </div>
+      
 
       {fetchedData && (
         <div className="table-container">
@@ -141,6 +159,9 @@ const History = ({ baseUrl }) => {
             </tbody>
           </table>
         </div>
+      )}
+      </div>) : (
+        <Unauthorized profile={profile} />
       )}
     </div>
   );

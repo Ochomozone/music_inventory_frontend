@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import InstrumentFetcher from '../util/InstrumentSearch';
 import LostAndFoundSearch from '../util/lostAndFoundSearch';
+import { ViewInstruments, CreateNewInstrument } from '../util/Permissions';
+import Unauthorized from './Unauthorized';
 import '../index.css';
 import { NavLink } from 'react-router-dom';
 // import './Styles.css';
@@ -9,6 +11,8 @@ function Instruments({ baseUrl, profile }) {
   const [instruments, setInstruments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const canViewInstruments = ViewInstruments(profile);
+  const canCreateNewInstrument = CreateNewInstrument(profile);
 
   useEffect(() => {
     fetchInstruments();
@@ -54,11 +58,12 @@ function Instruments({ baseUrl, profile }) {
 
   return (
     <div className="container">
-      <div className='centered-text'>
+      {canViewInstruments ?(<div>
+      {canCreateNewInstrument &&(<div className='centered-text'>
       <NavLink to="/newInstrument">
           <button className='create-checkout-button'><h2>New Instrument!</h2></button>
       </NavLink>
-      </div>
+      </div>)}
       <div>
         <h1>Instruments</h1>
        
@@ -104,6 +109,10 @@ function Instruments({ baseUrl, profile }) {
         </table>
         </div>
       </div>
+      </div>) : (
+        <Unauthorized profile={profile}/>
+      
+      )}
     </div>
   );
 }

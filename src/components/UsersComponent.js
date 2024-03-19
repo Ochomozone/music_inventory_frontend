@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import UsersSearch from '../util/UsersSearch';
+import '../index.css';
+import { ViewUsers,  } from '../util/Permissions';
+import Unauthorized from './Unauthorized';
 
-function UsersComponent({ baseUrl }) {
+function UsersComponent({ baseUrl, profile }) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const canViewUsers = ViewUsers(profile);
 
   useEffect(() => {
     async function fetchUsers() {
@@ -39,6 +43,7 @@ function UsersComponent({ baseUrl }) {
 
   return (
     <div  className='container'>
+      {canViewUsers ?(<div>
       <div className='centered-text'>
       <h1>Users</h1>
       </div>
@@ -71,7 +76,10 @@ function UsersComponent({ baseUrl }) {
           </tbody>
         </table>
         </div>
-     
+        </div>) : (
+          <Unauthorized profile={profile}/>
+        
+        )}
     </div>
   );
 }
