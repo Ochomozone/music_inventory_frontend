@@ -9,7 +9,7 @@ function UsersComponent({ baseUrl }) {
   useEffect(() => {
     async function fetchUsers() {
       try {
-        const response = await fetch(baseUrl);
+        const response = await fetch(`${baseUrl}/users`);
         if (!response.ok) {
           throw new Error('Failed to fetch users');
         }
@@ -42,7 +42,7 @@ function UsersComponent({ baseUrl }) {
       <div className='centered-text'>
       <h1>Users</h1>
       </div>
-      <UsersSearch baseUrl={baseUrl} onDataFetched={handleDataFetched} />
+      <UsersSearch baseUrl={`${baseUrl}/users`} onDataFetched={handleDataFetched} />
       <div className="table-container">
         <table className="table">
           <thead>

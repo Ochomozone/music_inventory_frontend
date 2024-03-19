@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import InstrumentFetcher from '../util/InstrumentSearch';
 import LostAndFoundSearch from '../util/lostAndFoundSearch';
 import '../index.css';
+import { NavLink } from 'react-router-dom';
 // import './Styles.css';
 
 function Instruments({ baseUrl, profile }) {
@@ -53,6 +54,11 @@ function Instruments({ baseUrl, profile }) {
 
   return (
     <div className="container">
+      <div className='centered-text'>
+      <NavLink to="/newInstrument">
+          <button className='create-checkout-button'><h2>New Instrument!</h2></button>
+      </NavLink>
+      </div>
       <div>
         <h1>Instruments</h1>
        

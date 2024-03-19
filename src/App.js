@@ -7,7 +7,9 @@ import Instruments from './components/Instruments';
 import Checkouts from './components/Checkout';
 import UsersComponent from './components/UsersComponent';
 import NewCheckout from './components/NewCheckout';
+import NewInstrument from './components/NewInstrument';
 import History from './components/History';
+import Unauthorized from './components/Unauthorized';
 
 const baseUrl = 'http://localhost:4001';
 
@@ -94,9 +96,11 @@ function App() {
           <>
             <Route path="/instruments" element={<Instruments baseUrl={baseUrl} profile={profile} />} />
             <Route path="/checkouts" element={<Checkouts baseUrl={baseUrl} profile={profile}/>} />
-            <Route path="/users" element={<UsersComponent baseUrl={`${baseUrl}/users`} profile={profile}/>} />
+            <Route path="/users" element={<UsersComponent baseUrl={`${baseUrl}`} profile={profile}/>} />
             <Route path="/newcheckout" element={<NewCheckout baseUrl={baseUrl} profile={profile}/>} />
+            <Route path="/newinstrument" element={<NewInstrument baseUrl={baseUrl} profile={profile}/>} />
             <Route path="/history" element={<History baseUrl={baseUrl} profile={profile}/>} />
+            <Route path="/unauthorized" element={<Unauthorized profile={profile} />} />
           </>
         )}
       </Routes>

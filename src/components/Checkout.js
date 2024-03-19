@@ -2,11 +2,16 @@ import React, { useState, useEffect } from 'react';
 import CheckoutSearch from '../util/CheckoutSearch';
 import { NavLink } from 'react-router-dom';
 import '../index.css';
+import { ViewCheckouts, CreateCheckout ,TurnInCheckout} from '../util/Permissions';
+import Unauthorized from './Unauthorized';
 
-function Checkouts({baseUrl}) {
+function Checkouts({baseUrl, profile}) {
   const [dispatches, setDispatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const canCreateCheckout = CreateCheckout(profile);
+  const canViewCheckouts = ViewCheckouts(profile);
+  const canTurnInCheckout = TurnInCheckout(profile);
 
   useEffect(() => {
     fetchCheckouts();
@@ -39,11 +44,11 @@ function Checkouts({baseUrl}) {
     await fetchCheckouts();
   };
 
-  const handleTurnIn = async (instrumentId, userName, description, number) => {
+  const handleTurnIn = async (instrumentId, userName, description, number, profile) => {
     const confirmation = window.confirm(`Are you sure you want to turn in ${userName}'s ${description} number ${number}?`);
     if (confirmation) {
       try {
-        const response = await fetch(`${baseUrl}/returns?instrumentId=${instrumentId}`, {
+        const response = await fetch(`${baseUrl}/returns?instrumentId=${instrumentId}&userName=${profile.username}&userId=${profile.databaseId}`, {
           method: 'POST',
         });
         if (!response.ok) {
@@ -67,14 +72,15 @@ function Checkouts({baseUrl}) {
 
   return (
     <div className="container">
-      <div className='centered-text'>
+     
+     {canCreateCheckout && (<div className='centered-text'>
       <NavLink to="/newcheckout">
           <button className='create-checkout-button'><h2>Create New Checkout!</h2></button>
       </NavLink>
-      </div>
+      </div>)}
       <h1 className='centered-text'>Instrument Checkouts</h1>
-      <CheckoutSearch  className="navlink-button" onDataFetched={handleDataFetched} baseUrl={`${baseUrl}/checkouts`} onClear={handleClearFields}/>
-      <div className="table-container">
+      {canViewCheckouts &&(<CheckoutSearch  className="navlink-button" onDataFetched={handleDataFetched} baseUrl={`${baseUrl}/checkouts`} onClear={handleClearFields}/>)}
+      {canViewCheckouts ? (<div className="table-container">
         <table className="table">
           <thead>
             <tr>
@@ -95,9 +101,9 @@ function Checkouts({baseUrl}) {
                   <td>{instrument.number}</td>
                   <td>{instrument.make}</td>
                   <td>{instrument.serial}</td>
-                  <td>
-                    <button onClick={() => handleTurnIn(instrument.id, instrument.user_name, instrument.description, instrument.number)}>Turn In</button>
-                  </td>
+                  {canTurnInCheckout &&(<td>
+                    <button onClick={() => handleTurnIn(instrument.id, instrument.user_name, instrument.description, instrument.number, profile)}>Turn In</button>
+                  </td>)}
                 </tr>
               ))
             ) : (
@@ -107,7 +113,9 @@ function Checkouts({baseUrl}) {
             )}
           </tbody>
         </table>
-        </div>
+        </div>) : (
+          <Unauthorized profile={profile} />
+        )}
     </div>
   );
 }

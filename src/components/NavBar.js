@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
+import {ShowCheckoutsLink, ShowLogsLink, ShowUsersLink, ShowInstrumentsLink,ShowNewCheckoutLink} from '../util/Permissions';
 import './Navbar.css';
 
 const Navbar = ({ profile, logOut }) => {
@@ -16,11 +17,11 @@ const Navbar = ({ profile, logOut }) => {
     };
   }, []);
 
-  const showLogsLink = ['INVENTORY MANAGER', 'ADMINISTRATION'].includes(profile.role);
-  const showNewCheckoutLink = ['INVENTORY MANAGER', 'MUSIC TEACHER'].includes(profile.role);
-  const showUsersLink = ['INVENTORY MANAGER', 'MUSIC TEACHER', 'MUSIC TA', 'ADMINISTRATION'].includes(profile.role);
-  const showInstrumentsLink = ['INVENTORY MANAGER', 'MUSIC TEACHER', 'ADMINISTRATION'].includes(profile.role);
-  const showCheckoutsLink = ['INVENTORY MANAGER', 'MUSIC TEACHER', 'MUSIC TA', 'ADMINISTRATION'].includes(profile.role);
+  const showLogsLink = ShowLogsLink(profile);
+  const showNewCheckoutLink = ShowNewCheckoutLink(profile);
+  const showUsersLink = ShowUsersLink(profile);
+  const showInstrumentsLink = ShowInstrumentsLink(profile);
+  const showCheckoutsLink = ShowCheckoutsLink(profile);
 
   return (
     <nav className={`navbar ${isMobile ? 'mobile' : ''}`}>
