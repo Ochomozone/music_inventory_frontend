@@ -10,6 +10,7 @@ import NewCheckout from './components/NewCheckout';
 import NewInstrument from './components/NewInstrument';
 import History from './components/History';
 import Unauthorized from './components/Unauthorized';
+import Detail from './components/Details';
 
 const baseUrl = 'http://localhost:4001';
 
@@ -101,6 +102,8 @@ function App() {
             <Route path="/newinstrument" element={<NewInstrument baseUrl={baseUrl} profile={profile}/>} />
             <Route path="/history" element={<History baseUrl={baseUrl} profile={profile}/>} />
             <Route path="/unauthorized" element={<Unauthorized profile={profile} />} />
+            <Route path="/details/" element={<Detail baseUrl={baseUrl} profile={profile} />} />
+
           </>
         )}
       </Routes>

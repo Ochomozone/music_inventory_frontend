@@ -80,6 +80,7 @@ function Instruments({ baseUrl, profile }) {
               <th>Make</th>
               <th>Model</th>
               <th>Location</th>
+              <th>Details</th>
               <th>Missing?</th>
             </tr>
           </thead>
@@ -92,6 +93,12 @@ function Instruments({ baseUrl, profile }) {
       <td>{instrument.make}</td>
       <td>{instrument.model}</td>
       <td>{instrument.location ? instrument.location : instrument.user_name}</td>
+      <td>
+        <NavLink
+          to={`/details?description=${instrument.description}&number=${instrument.number}`}>
+            <button className='button'><h2>Details</h2></button>
+        </NavLink>
+      </td>
       <td>
           <LostAndFoundSearch
           baseUrl={baseUrl}

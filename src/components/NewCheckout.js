@@ -92,6 +92,7 @@ const NewCheckout = ({ baseUrl }) => {
     const [classValue, setClassValue] = useState('');
     const [userData, setUserData] = useState([]);
     const [selectedUserId, setSelectedUserId] = useState('');
+    const [selectedUserName, setSelectedUserName] = useState('');
     const [selectedRow, setSelectedRow] = useState(null);
     const [error, setError] = useState(null);
     const [description, setDescription] = useState('');
@@ -102,6 +103,7 @@ const NewCheckout = ({ baseUrl }) => {
     const [selectedInstrumentRow, setSelectedInstrumentRow] = useState(null);
     const [checkoutMessage, setCheckoutMessage] = useState('');
     const [showPopup, setShowPopup] = useState(false);
+
   
     const handleUserSearch = async () => {
       try {
@@ -112,10 +114,21 @@ const NewCheckout = ({ baseUrl }) => {
       }
     };
   
-    const handleSelectUser = (userId, index) => {
+    const handleSelectUser = (userId, userName, index) => {
+      console.log('userId:', userId);
+      console.log('userName:', userName);
       setSelectedUserId(userId);
+      setSelectedUserName(userName);
       setSelectedRow(index);
     };
+    const handleClearUserFields = async () => {
+        setUserName('');
+        setUserDivision('');
+        setClassValue('');
+        setUserData([]);
+        setSelectedUserId('');
+        setSelectedRow(null);
+      };
 
     const handleInstrumentSearch = async () => {
         try {
@@ -132,7 +145,18 @@ const NewCheckout = ({ baseUrl }) => {
         setSelectedInstrumentRow(index);
       };
 
+      const handleClearInstrumentFields = async () => {
+        setDescription('');
+        setNumber('');
+        setInstrumentData([]);
+        setSelectedInstrumentDescription('');
+        setSelectedInstrumentNumber('');
+        setSelectedInstrumentRow(null);
+      };
+
       const handleSubmitCheckout = async () => {
+        const confirmation = window.confirm(`Are you sure you want to assign this user ${selectedInstrumentDescription} number ${selectedInstrumentNumber} to ${selectedUserName}?`);
+        if (confirmation) {
         try {
           if (!selectedInstrumentNumber || !selectedUserId || !selectedInstrumentDescription) {
             throw new Error('Please select both a user and an instrument');
@@ -164,12 +188,13 @@ const NewCheckout = ({ baseUrl }) => {
           console.error('Error submitting checkout:', error.message);
             setError(error.message);
         }
+      }
       };
       
   
     return (
         <div className="search-page">
-        <div className="container">
+        <div className="checkout-container">
           <div className="search-section">
             <div className="search-box">
               <h2>Search User</h2>
@@ -206,11 +231,16 @@ const NewCheckout = ({ baseUrl }) => {
                   autoComplete='off'
                 />
               </label>
-              <button type="button" onClick={handleUserSearch}>Search</button>
+              {( userName || userDivision || classValue) &&(<div>
+              <button 
+                type="button" 
+                onClick={handleUserSearch}>Search</button>
+              <button type="button" onClick={handleClearUserFields}>Clear</button>
+              </div>)}
             </div>
-            <div className="search-results">
-              <h2>User Results</h2>
-              <table>
+            {userData.length >0 &&(<div className="search-results">
+              <h2>Select User</h2>
+              <table className='table'>
                 <thead>
                   <tr>
                     <th>Name</th>
@@ -224,17 +254,17 @@ const NewCheckout = ({ baseUrl }) => {
                       <td>{user.full_name}</td>
                       <td>{user.grade_level}</td>
                       <td>
-                        <button onClick={() => handleSelectUser(user.id, index)}>Select</button>
+                        <button onClick={() => handleSelectUser(user.id, user.full_name, index)}>Select</button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            </div>
+            </div>)}
           </div>
           <div className="instrument-search-section">
             <div className="instrument-search-box">
-              <h2>Search Instrument</h2>
+              <h2>Select Instrument</h2>
               <label htmlFor="instrumentName">
                 Description:
                 <input
@@ -257,11 +287,14 @@ const NewCheckout = ({ baseUrl }) => {
                   autoComplete='off'
                 />
               </label>
+              {description &&(<div>
               <button type="button" onClick={handleInstrumentSearch}>Search</button>
+              <button type="button" onClick={handleClearInstrumentFields}>Clear</button>
+              </div>)}
             </div>
-            <div className="search-results instrument-search-results">
+           {instrumentData.length > 0 &&( <div className="search-results instrument-search-results">
               <h2>Instrument Results</h2>
-              <table>
+              <table className='table'>
                 <thead>
                   <tr>
                     <th>Description</th>
@@ -281,19 +314,21 @@ const NewCheckout = ({ baseUrl }) => {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </div>)}
           </div>
           <div className="submit-section">
-            <button
+            {selectedInstrumentNumber && selectedUserId &&(<button
               type="button"
               onClick={handleSubmitCheckout}
               disabled={!selectedInstrumentNumber || !selectedUserId || !selectedInstrumentDescription}
             >
               Submit Checkout
-            </button>
+            </button>)}
           </div>
         </div>
-        {showPopup && <PopupMessage message={checkoutMessage} onClose={() => setShowPopup(false)} />}
+        {showPopup && <PopupMessage 
+          message={checkoutMessage} 
+          onClose={() => setShowPopup(false)} />}
         {error&& <p>Error: {error}</p>}
       </div>
       

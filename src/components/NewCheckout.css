@@ -1,4 +1,4 @@
-.container {
+.checkout-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 20px;
@@ -24,7 +24,7 @@
   justify-content: space-between;
 }
 
-.search-box button,
+/* .search-box button,
 .instrument-search-box button {
   width: 100px; 
   padding: 10px 10px;
@@ -34,7 +34,7 @@
   border-radius: 5px;
   justify-content: space-between;
   text-align: center;
-}
+} */
 
 .search-results,
 .instrument-search-results {
@@ -43,57 +43,32 @@
   width: auto;
 }
 
-.search-results table {
+/* .search-results table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
   overflow: hidden;
   table-layout: fixed;
-}
+} */
 
-.search-results tbody {
+/* .search-results tbody {
   max-height: 200px;
   overflow-y: auto;
-}
+} */
 
-.search-results th,
+/* .search-results th,
 .search-results td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
-}
+} */
 
-.search-results th {
+/* .search-results th {
   background-color: #f2f2f2;
-}
-
-.search-results button {
-  padding: 5px 10px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-/* Style for the selected row */
-.search-results tr.selected {
-  background-color: #ee7373;
-}
+} */
 
 .submit-section {
   grid-column: 1 / -1;
   text-align: center;
   margin-top: 20px;
-}
-
-.submit-section button {
-  padding: 10px 30px;
-  color: rgb(19, 206, 81);
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: x-large;
-  width: 30%; 
-  height: auto;
 }
