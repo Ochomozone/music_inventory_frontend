@@ -44,11 +44,11 @@ function Checkouts({baseUrl, profile}) {
     await fetchCheckouts();
   };
 
-  const handleTurnIn = async (instrumentId, userName, description, number, profile) => {
+  const handleTurnIn = async (instrumentId, userName, description, number, formerUserId, profile) => {
     const confirmation = window.confirm(`Are you sure you want to turn in ${userName}'s ${description} number ${number}?`);
     if (confirmation) {
       try {
-        const response = await fetch(`${baseUrl}/returns?instrumentId=${instrumentId}&userName=${profile.username}&userId=${profile.databaseId}`, {
+        const response = await fetch(`${baseUrl}/returns?instrumentId=${instrumentId}&userName=${profile.username}&userId=${profile.databaseId}&formerUserId=${formerUserId}`, {
           method: 'POST',
         });
         if (!response.ok) {
@@ -102,7 +102,7 @@ function Checkouts({baseUrl, profile}) {
                   <td>{instrument.make}</td>
                   <td>{instrument.serial}</td>
                   {canTurnInCheckout &&(<td>
-                    <button onClick={() => handleTurnIn(instrument.id, instrument.user_name, instrument.description, instrument.number, profile)}>Turn In</button>
+                    <button onClick={() => handleTurnIn(instrument.id, instrument.user_name, instrument.description, instrument.number, instrument.user_id, profile)}>Turn In</button>
                   </td>)}
                 </tr>
               ))

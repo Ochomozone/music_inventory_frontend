@@ -3,7 +3,9 @@ import InstrumentFetcher from '../util/InstrumentSearch';
 import LostAndFoundSearch from '../util/lostAndFoundSearch';
 import { ViewInstruments, CreateNewInstrument } from '../util/Permissions';
 import Unauthorized from './Unauthorized';
+import { useNavigate } from 'react-router-dom';
 import '../index.css';
+
 import { NavLink } from 'react-router-dom';
 // import './Styles.css';
 
@@ -13,6 +15,10 @@ function Instruments({ baseUrl, profile }) {
   const [error, setError] = useState(null);
   const canViewInstruments = ViewInstruments(profile);
   const canCreateNewInstrument = CreateNewInstrument(profile);
+  const navigate = useNavigate();
+
+
+
 
   useEffect(() => {
     fetchInstruments();
@@ -65,7 +71,9 @@ function Instruments({ baseUrl, profile }) {
       </NavLink>
       </div>)}
       <div>
+        <div className='centered-text'>
         <h1>Instruments</h1>
+        </div>
        
       <h2 className='centered-text'>Search Instruments</h2>
       
@@ -78,7 +86,6 @@ function Instruments({ baseUrl, profile }) {
               <th>Description</th>
               <th>Number</th>
               <th>Make</th>
-              <th>Model</th>
               <th>Location</th>
               <th>Details</th>
               <th>Missing?</th>
@@ -91,14 +98,13 @@ function Instruments({ baseUrl, profile }) {
       <td>{instrument.description}</td>
       <td>{instrument.number}</td>
       <td>{instrument.make}</td>
-      <td>{instrument.model}</td>
       <td>{instrument.location ? instrument.location : instrument.user_name}</td>
       <td>
-        <NavLink
-          to={`/details?description=${instrument.description}&number=${instrument.number}`}>
-            <button className='button'><h2>Details</h2></button>
-        </NavLink>
+      <button onClick={() => navigate(`/details?description=${instrument.description}&number=${instrument.number}`, 
+      { state: { instrument: instrument }})}>Details</button>
+
       </td>
+
       <td>
           <LostAndFoundSearch
           baseUrl={baseUrl}

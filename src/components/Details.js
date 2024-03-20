@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import '../util/Util.css';
+import { useLocation } from 'react-router-dom';
+import '../index.css';
 
 const formatDate = (timestamp) => {
   const date = new Date(timestamp);
@@ -12,10 +13,12 @@ const formatDate = (timestamp) => {
   });
 };
 
-const fetchData = async (baseUrl, userName = '', description = '', number = '') => {
+const fetchData = async (baseUrl, userName = '', description = '', number = '', databaseId = '') => {
   let url = `${baseUrl}/history`;
   const params = new URLSearchParams();
-
+  if (databaseId.length > 0) {
+    params.append('databaseId', databaseId);
+  }
   if (userName.length > 0) {
     params.append('userName', userName);
   }
@@ -43,24 +46,99 @@ const fetchData = async (baseUrl, userName = '', description = '', number = '') 
   }
 };
 
-const Detail = ({ baseUrl, userName, description, number }) => {
+const Detail = ({ baseUrl }) => {
   const [fetchedData, setFetchedData] = useState(null);
-
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const userName = searchParams.get('userName') || '';
+  const databaseId = searchParams.get('databaseId') || '';
+  const description = searchParams.get('description') || '';
+  const number = searchParams.get('number') || '';
+  const instrument = location.state.instrument;
+  const user = location.state.user;
+  const instrumentKeysOrder = ['family', 'description', 'make', 'model', 'serial', 'legacy_code', 'code', 'number', 'state', 'location', 'user_name', 'checkout_date', 'return_date'];
+  const userKeysOrder = ['full_name', 'role', 'email', 'division', 'grade_level', 'class', 'active'];
   useEffect(() => {
     const fetchDataAndUpdate = async () => {
-      const data = await fetchData(baseUrl, userName, description, number);
+      const data = await fetchData(baseUrl, userName,  description, number, databaseId);
       if (data) {
         setFetchedData(data);
       }
     };
 
     fetchDataAndUpdate();
-  }, [baseUrl, userName, description, number]);
+  }, [baseUrl, userName,  description, number, databaseId, location.state]);
 
   return (
-    <div>
-      {fetchedData && (
-        <div className="table-container">
+    <div className='container'>
+      <div className='centered-text'>
+        <h2>Details</h2>
+      </div>
+      {instrument && (
+  <table>
+    <tbody>
+      {instrumentKeysOrder.map((key, index) => (
+        (instrument[key] && (
+          <tr className='container-pair' key={index}>
+            <td className='left-container'>
+              {key === 'description' ? 'TYPE' : key === 'number' ? 'CASE NUMBER' : key.toUpperCase()}:    
+            </td>
+            <td className='right-container' style={{ marginLeft: '10px' }}>
+              {instrument[key]}
+            </td>
+          </tr>
+        ))
+      ))}
+    </tbody>
+  </table>
+)}
+
+{user && (
+  <table>
+    <tbody>
+      {userKeysOrder.map((key, index) => (
+        (user[key] && (
+          <tr className='container-pair' key={index}>
+            <td className='left-container'>
+              {key === 'full_name' ? 'NAME' : key === 'grade_level' ? 'GRADE' : key.toUpperCase()}:    
+            </td>
+            <td className='right-container' style={{ marginLeft: '10px' }}>
+            {key === 'active' ? (user[key] ? 'TRUE' : 'FALSE') : user[key]}
+            </td>
+          </tr>
+        ))
+      ))}
+    </tbody>
+  </table>
+)}
+
+<div className='centered-text'>
+        <h2>History</h2>
+      </div>
+
+      {(instrument &&fetchedData && fetchedData.length > 0) && (
+          <table className='table'>
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Transaction</th>
+                <th>Name</th>
+                <th>Created By</th>
+              </tr>
+            </thead>
+            <tbody>
+              {fetchedData.map((item, index) => (
+                <tr key={index}>
+                  <td>{formatDate(item.transaction_timestamp)}</td>
+                  <td>{item.transaction_type}</td>
+                  <td>{item.full_name}</td>
+                  <td>{item.created_by}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+      )}
+       {(user &&fetchedData && fetchedData.length > 0) && (
           <table className='table'>
             <thead>
               <tr>
@@ -68,7 +146,6 @@ const Detail = ({ baseUrl, userName, description, number }) => {
                 <th>Transaction</th>
                 <th>Description</th>
                 <th>Number</th>
-                <th>Name</th>
                 <th>Created By</th>
               </tr>
             </thead>
@@ -79,13 +156,11 @@ const Detail = ({ baseUrl, userName, description, number }) => {
                   <td>{item.transaction_type}</td>
                   <td>{item.description}</td>
                   <td>{item.number}</td>
-                  <td>{item.full_name}</td>
                   <td>{item.created_by}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
       )}
     </div>
   );

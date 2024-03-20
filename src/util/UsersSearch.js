@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../index.css';
 
 const fetchData = async (baseUrl, userName = '', userDivision = '', classValue = '') => {
-  let url = `${baseUrl}`;
+  let url = `${baseUrl}/users`;
   const params = new URLSearchParams();
 
   if (userName.length > 0) {
@@ -18,6 +18,8 @@ const fetchData = async (baseUrl, userName = '', userDivision = '', classValue =
   if (params.toString()) {
     url += `?${params.toString()}`;
   }
+  if (!params.toString()) {
+    return {};}
 
   try {
     const response = await fetch(url);
@@ -100,13 +102,14 @@ const UsersSearch = ({ baseUrl, onDataFetched }) => {
     />
     </div>
   </div>
-  <div className='container-pair'>
+  {(userName ||userDivision || classValue) &&(<div className='container-pair'>
     <div className='left-container'>
   <button type="button" onClick={handleFetchData}>Search</button>
-  </div><div className='right-container'>
+  </div>
+  <div className='right-container'>
   <button type="button" onClick={handleClearFields}>Clear</button>
   </div>
-  </div>
+  </div>)}
 </div>
 
   

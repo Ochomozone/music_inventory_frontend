@@ -115,8 +115,6 @@ const NewCheckout = ({ baseUrl }) => {
     };
   
     const handleSelectUser = (userId, userName, index) => {
-      console.log('userId:', userId);
-      console.log('userName:', userName);
       setSelectedUserId(userId);
       setSelectedUserName(userName);
       setSelectedRow(index);
