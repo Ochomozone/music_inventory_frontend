@@ -106,7 +106,7 @@ tbody {
 .table tbody tr:hover {
   background-color: #ddd;
 }
-tr.selected {
+tr .selected {
   background-color: #4984fa;
 }
 

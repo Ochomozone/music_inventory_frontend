@@ -7,7 +7,6 @@ import '../index.css';
 import { RequestInstruments } from '../util/Permissions';
 
 const fetchData = async (baseUrl, data) => {
-  console.log(data);
   try {
     const response = await fetch(`${baseUrl}/requests`, {
       method: 'POST',

@@ -16,7 +16,7 @@ const LostAndFoundSearch = ({ baseUrl, itemId, profile }) => {
         const foundItem = response.data[0];
         const message = `Your instrument was found by ${foundItem.finder_name} 
                           on ${new Date(foundItem.date).toLocaleDateString()} and 
-                          in ${foundItem.location}.`;
+                          is in ${foundItem.location}.`;
          const altMessage = `Instrument was found by ${foundItem.finder_name} 
                           on ${new Date(foundItem.date).toLocaleDateString()} and 
                           is in ${foundItem.location}. 
