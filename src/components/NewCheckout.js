@@ -58,9 +58,10 @@ const fetchUserData = async (baseUrl, userName = '', userDivision = '', classVal
   }
 };
 
-const fetchInstrumentData = async (baseUrl, instrumentName = '', instrumentNumber = '') => {
+const fetchInstrumentData = async (baseUrl, instrumentLocation, instrumentName = '', instrumentNumber = '') => {
     let url = `${baseUrl}/available`;
     const params = new URLSearchParams();
+    params.append('location', instrumentLocation);
   
     if (instrumentName.length > 0) {
       params.append('description', instrumentName);
@@ -86,7 +87,7 @@ const fetchInstrumentData = async (baseUrl, instrumentName = '', instrumentNumbe
     }
   };
 
-const NewCheckout = ({ baseUrl }) => {
+const NewCheckout = ({ baseUrl, profile }) => {
     const [userName, setUserName] = useState('');
     const [userDivision, setUserDivision] = useState('');
     const [classValue, setClassValue] = useState('');
@@ -103,6 +104,7 @@ const NewCheckout = ({ baseUrl }) => {
     const [selectedInstrumentRow, setSelectedInstrumentRow] = useState(null);
     const [checkoutMessage, setCheckoutMessage] = useState('');
     const [showPopup, setShowPopup] = useState(false);
+    const instrumentLocation = profile.room;
 
   
     const handleUserSearch = async () => {
@@ -130,8 +132,8 @@ const NewCheckout = ({ baseUrl }) => {
 
     const handleInstrumentSearch = async () => {
         try {
-          const fetchedInstrumentData = await fetchInstrumentData(baseUrl, description, number);
-          setInstrumentData(fetchedInstrumentData); 
+          const fetchedInstrumentData = await fetchInstrumentData(baseUrl, instrumentLocation, description, number);
+          setInstrumentData(fetchedInstrumentData.filter(item=> item.location === instrumentLocation)); 
         } catch (error) {
           setError(error.message);
         }

@@ -11,6 +11,7 @@ import NewInstrument from './components/NewInstrument';
 import History from './components/History';
 import Unauthorized from './components/Unauthorized';
 import Detail from './components/Details';
+import NewRequest from './components/NewInstrumentRequest';
 
 const baseUrl = 'http://localhost:4001';
 
@@ -103,6 +104,7 @@ function App() {
             <Route path="/history" element={<History baseUrl={baseUrl} profile={profile}/>} />
             <Route path="/unauthorized" element={<Unauthorized profile={profile} />} />
             <Route path="/details/" element={<Detail baseUrl={baseUrl} profile={profile} />} />
+            <Route path="/newrequest" element={<NewRequest baseUrl={baseUrl} profile={profile} />} />
 
           </>
         )}

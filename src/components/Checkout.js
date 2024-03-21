@@ -75,7 +75,7 @@ function Checkouts({baseUrl, profile}) {
      
      {canCreateCheckout && (<div className='centered-text'>
       <NavLink to="/newcheckout">
-          <button className='create-checkout-button'><h2>Create New Checkout!</h2></button>
+          <button className='big-fixed-button'><h2>Create New Checkout!</h2></button>
       </NavLink>
       </div>)}
       <h1 className='centered-text'>Instrument Checkouts</h1>

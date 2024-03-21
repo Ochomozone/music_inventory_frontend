@@ -181,9 +181,9 @@ button {
   color: #fff;
   max-width: 200px; /* Set a maximum width for the buttons */
 }
-.create-checkout-button {
-  font-size: 24px;
-  padding: 20px 40px;
+.big-fixed-button{
+  font-size: 18px;
+  padding: 20px ;
   background-color: #0931fa;
   color: #fff;
   border:gold;

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import InstrumentFetcher from '../util/VanillaInstrumentSearch';
 import LostAndFoundSearch from '../util/lostAndFoundSearch';
+import { NavLink } from 'react-router-dom';
+import { RequestInstruments } from '../util/Permissions';
 import '../index.css';
 
 const Home = ({ profile, login, baseUrl }) => {
@@ -11,6 +13,7 @@ const Home = ({ profile, login, baseUrl }) => {
       login();
     }
   };
+  const canRequestInstruments = RequestInstruments(profile);
 
   useEffect(() => {
     if (profile && profile.databaseId) {
@@ -50,7 +53,12 @@ const Home = ({ profile, login, baseUrl }) => {
   return (
     <div className='page'>
       <div className='Container'>
-      <h1>Music Inventory System</h1>
+      {canRequestInstruments &&(<div className='centered-text'>
+      <NavLink to="/newrequest">
+          <button className='big-fixed-button'><h2>Request For Instruments</h2></button>
+      </NavLink>
+      </div>)}
+      <h1 className='centered-text'>Music Inventory System</h1>
       <h2 className='centered-text'>Lost and Found</h2>
       </div>
       <InstrumentFetcher  baseUrl={baseUrl} profile={profile}/>

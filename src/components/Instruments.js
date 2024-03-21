@@ -67,7 +67,7 @@ function Instruments({ baseUrl, profile }) {
       {canViewInstruments ?(<div>
       {canCreateNewInstrument &&(<div className='centered-text'>
       <NavLink to="/newInstrument">
-          <button className='create-checkout-button'><h2>New Instrument!</h2></button>
+          <button className='big-fixed-button'><h2>New Instrument!</h2></button>
       </NavLink>
       </div>)}
       <div>

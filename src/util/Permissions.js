@@ -6,21 +6,28 @@ export const LoggedIn = (profile) => {
 };
 export const ViewUserInfo = (profile) => {
     const showUserInfo = profile?.role && 
-    ['INVENTORY MANAGER', 'ADMINISTRATOR', 'TEACHER', 'MUSIC TA']
+    ['INVENTORY MANAGER', 'ADMINISTRATOR', 'MUSIC TEACHER', 'MUSIC TA']
     .includes(profile.role);
     return showUserInfo;
 };
 
 export const ViewInstruments = (profile) => {
     const showAllInstruments = profile?.role && 
-    ['INVENTORY MANAGER', 'ADMINISTRATOR', 'TEACHER', 'MUSIC TA']
+    ['INVENTORY MANAGER', 'ADMINISTRATOR', 'MUSIC TEACHER', 'MUSIC TA']
     .includes(profile.role);
     return showAllInstruments;
 };
 
+export const RequestInstruments = (profile) => {
+    const canRequestInstruments = profile?.role && 
+    ['MUSIC TEACHER', 'TEACHER', 'MUSIC TA', 'STUDENT ']
+    .includes(profile.role);
+    return canRequestInstruments;
+};
+
 export const ViewUsers = (profile) => {
     const showUsers = profile?.role && 
-    ['INVENTORY MANAGER', 'ADMINISTRATOR', 'TEACHER', 'MUSIC TA']
+    ['INVENTORY MANAGER', 'ADMINISTRATOR', 'MUSIC TEACHER', 'MUSIC TA']
     .includes(profile.role);
     return showUsers;
 };
@@ -32,19 +39,19 @@ export const CreateNewInstrument = (profile) => {
 };
 export const ViewCheckouts = (profile) => {
     const viewCheckouts = profile?.role && 
-    ['INVENTORY MANAGER', 'ADMINISTRATOR', 'TEACHER', 'MUSIC TA']
+    ['INVENTORY MANAGER', 'ADMINISTRATOR', 'MUSIC TEACHER', 'MUSIC TA']
     .includes(profile.role);
     return viewCheckouts;
 };
 export const CreateCheckout = (profile) => {
     const createCheckout = profile?.role && 
-    ['INVENTORY MANAGER', 'TEACHER']
+    ['INVENTORY MANAGER', 'MUSIC TEACHER']
     .includes(profile.role);
     return createCheckout;
 };
 export const TurnInCheckout = (profile) => {
     const turnInCheckout = profile?.role && 
-    ['INVENTORY MANAGER', 'TEACHER', 'MUSIC TA']
+    ['INVENTORY MANAGER', 'MUSIC TEACHER', 'MUSIC TA']
     .includes(profile.role);
     return turnInCheckout;
 }
@@ -63,25 +70,25 @@ export const ShowLogsLink = (profile) => {
 };
 export const ShowNewCheckoutLink = (profile) => {
     const showNewCheckoutLink = profile?.role && 
-    ['INVENTORY MANAGER', 'TEACHER']
+    ['INVENTORY MANAGER', 'MUSIC TEACHER']
     .includes(profile.role);
     return showNewCheckoutLink;
 };
 export const ShowUsersLink = (profile) => {
     const showUsersLink = profile?.role && 
-    ['INVENTORY MANAGER', 'TEACHER', 'MUSIC TA', 'ADMINISTRATOR']
+    ['INVENTORY MANAGER', 'MUSIC TEACHER', 'MUSIC TA', 'ADMINISTRATOR']
     .includes(profile.role);
     return showUsersLink;
 };
 export const ShowInstrumentsLink = (profile) => {
     const showInstrumentsLink = profile?.role && 
-    ['INVENTORY MANAGER', 'TEACHER', 'ADMINISTRATOR']
+    ['INVENTORY MANAGER', 'MUSIC TEACHER', 'ADMINISTRATOR']
     .includes(profile.role);
     return showInstrumentsLink;
 };
 export const ShowCheckoutsLink = (profile) => {
     const showCheckoutsLink = profile?.role && 
-    ['INVENTORY MANAGER', 'TEACHER', 'MUSIC TA', 'ADMINISTRATOR']
+    ['INVENTORY MANAGER', 'MUSIC TEACHER', 'MUSIC TA', 'ADMINISTRATOR']
     .includes(profile.role);
     return showCheckoutsLink;
 };

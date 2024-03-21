@@ -40,6 +40,20 @@ export const getAvailableNumbers = async (baseUrl, description) => {
     }
   };
 
+  export const getExistingEquipment = async (baseUrl) => {
+    try {
+      const response = await fetch(`${baseUrl}/equipment/existing`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch equipment data');
+      }
+      const equipmentData = await response.json();
+      return equipmentData.map(item => item.description);
+    } catch (error) {
+      console.error('Error fetching equipment data:', error);
+      throw error;
+    }
+  };
+
   export const getLocations = async (baseUrl) => {
     try {
       const response = await fetch(`${baseUrl}/instruments/location`);
