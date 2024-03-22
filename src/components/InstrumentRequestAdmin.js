@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import '../index.css';
+import { GrantInstrumentRequests} from '../util/Permissions';
 import Unauthorized from './Unauthorized';
 import { useLocation } from 'react-router-dom';
+import PopupMessage from './PopupMessage';
 import TableComponent from '../util/InstrumentDetailsRequestTable';
 
 const formatDate = (timestamp) => {
@@ -24,6 +26,7 @@ const formatDate = (timestamp) => {
     if (params.toString()) {
       url += `?${params.toString()}`;
     }
+    console.log('url:', url);
   
     try {
       const response = await fetch(url);
@@ -43,11 +46,19 @@ const formatDate = (timestamp) => {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const uniqueId = searchParams.get('uniqueId') || '';
+    const [descriptionRequestId, setDescriptionRequestId] = useState('');
+    const[notes, setNotes] = useState('');
     const createDate = location.state.createDate;
     const resolveDate = location.state.resolveDate;
     const prev_attended_by = location.state.attended_by;
     const createdBy = location.state.createdBy;
     const attendedBy = profile ? profile.name : '';
+    const attendedById = profile ? profile.databaseId : '';
+    const [status, setStatus] = useState('');
+    const [success, setSuccess] = useState('');
+    const [message, setMessage] = useState(null); 
+    const canGrant = GrantInstrumentRequests(profile);
+    const [showConfirmation, setShowConfirmation] = useState(false);
 
     useEffect(() => {
         const fetchDataFromBackend = async () => {
@@ -58,7 +69,7 @@ const formatDate = (timestamp) => {
         };
         fetchDataFromBackend();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [baseUrl, uniqueId]);
+    }, [baseUrl, uniqueId, descriptionRequestId]);
     if (!profile) {
         return <Unauthorized profile/>;
       }
@@ -113,6 +124,7 @@ const formatDate = (timestamp) => {
                 </div>
                 </div>
             )}
+            {message && <PopupMessage message={message} />}
             <div className='centered-text'>
             <button onClick={() => window.history.back()}>Back</button>
             </div>
