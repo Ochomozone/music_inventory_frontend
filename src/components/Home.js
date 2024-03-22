@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import InstrumentFetcher from '../util/VanillaInstrumentSearch';
 import LostAndFoundSearch from '../util/lostAndFoundSearch';
-import { NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { RequestInstruments } from '../util/Permissions';
 import '../index.css';
 
 const Home = ({ profile, login, baseUrl }) => {
   const [dispatches, setDispatches] = useState([]);
   const [error, setError] = useState(null);
+  const userId = profile && profile.databaseId;
   const handleLogin = () => {
     if (login) {
       login();
     }
   };
+
+  const navigate = useNavigate();
   const canRequestInstruments = RequestInstruments(profile);
 
   useEffect(() => {
@@ -53,11 +56,6 @@ const Home = ({ profile, login, baseUrl }) => {
   return (
     <div className='page'>
       <div className='Container'>
-      {canRequestInstruments &&(<div className='centered-text'>
-      <NavLink to="/newrequest">
-          <button className='big-fixed-button'><h2>Request For Instruments</h2></button>
-      </NavLink>
-      </div>)}
       <h1 className='centered-text'>Music Inventory System</h1>
       <h2 className='centered-text'>Lost and Found</h2>
       </div>
@@ -65,6 +63,20 @@ const Home = ({ profile, login, baseUrl }) => {
       {!profile && <button onClick={handleLogin}>Log In</button>}
       {profile && (
         <div>
+        <div className='centered-text'>
+        <h2>Instrument Requests</h2>
+        </div>
+        <div className='container-pair'>
+          <div className='left-container'>
+          <button onClick={() => navigate(
+            `/requests?userId=${userId}`)}>View My Requests</button>
+          </div>
+          {canRequestInstruments &&(<div className='right-container'>
+          <button onClick={() => navigate(
+            `/newrequest`)}>Make New Request</button>
+          </div>)}
+        </div>
+
           <h2 className='centered-text'>Instruments Assigned To You:</h2>
           {error && (
             <div className="popup">

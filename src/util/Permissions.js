@@ -25,6 +25,20 @@ export const RequestInstruments = (profile) => {
     return canRequestInstruments;
 };
 
+export const ViewAllInstrumentRequests = (profile) => {
+    const canViewInstrumentRequests = profile?.role && 
+    ['INVENTORY MANAGER', 'ADMINISTRATOR', 'MUSIC TEACHER', 'MUSIC TA']
+    .includes(profile.role);
+    return canViewInstrumentRequests;
+};
+export const GrantInstrumentRequests = (profile) => {
+    const canGrantInstrumentRequests = profile?.role && 
+    ['INVENTORY MANAGER']
+    .includes(profile.role);
+    return canGrantInstrumentRequests;
+};
+
+
 export const ViewUsers = (profile) => {
     const showUsers = profile?.role && 
     ['INVENTORY MANAGER', 'ADMINISTRATOR', 'MUSIC TEACHER', 'MUSIC TA']
