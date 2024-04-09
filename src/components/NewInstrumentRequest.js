@@ -112,9 +112,11 @@ const NewRequest = ({ baseUrl, profile }) => {
                 autoComplete='off'
               >
                 <option value="">Select Description</option>
-                {availableEquipment.map((equipment, index) => (
-                  <option key={index} value={equipment}>{equipment}</option>
-                ))}
+                {availableEquipment
+                 .sort((a, b) => a.localeCompare(b)) // Sort the array alphabetically
+                  .map((equipment, index) => (
+            <option key={index} value={equipment}>{equipment}</option>
+        ))}
               </select>
             </div>
           </div>

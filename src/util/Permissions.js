@@ -20,7 +20,7 @@ export const ViewInstruments = (profile) => {
 
 export const RequestInstruments = (profile) => {
     const canRequestInstruments = profile?.role && 
-    ['MUSIC TEACHER', 'TEACHER', 'MUSIC TA', 'STUDENT ']
+    ['MUSIC TEACHER', 'TEACHER', 'MUSIC TA', 'STUDENT']
     .includes(profile.role);
     return canRequestInstruments;
 };

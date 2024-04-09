@@ -1,8 +1,6 @@
 // helpers.js
 
 export const getAvailableNumbers = async (baseUrl, description) => {
-  
-
     try {
       const response = await fetch(`${baseUrl}/instruments?description=${description}`);
       if (!response.ok) {
@@ -20,6 +18,7 @@ export const getAvailableNumbers = async (baseUrl, description) => {
       }
       availableNumbers.unshift(nextAvailable);
       return availableNumbers;
+      
     } catch (error) {
       console.error('Error fetching available numbers:', error);
       throw error;
@@ -81,4 +80,24 @@ export const getAvailableNumbers = async (baseUrl, description) => {
       throw error;
     }
   };
+
+  export const getAvailableInstruments = async (baseUrl, description) => {
+    try {
+        const response = await fetch(`${baseUrl}/available?description=${description}`);
+        if (!response.ok) {
+            throw new Error('Error occurred');
+        }
+        const instruments = await response.json();
+        let availableInstruments = [];
+        instruments.forEach(instrument => {
+            availableInstruments = [...availableInstruments, {id: instrument.id, number: instrument.number}];
+        });
+        return availableInstruments;
+    } catch (error) {
+        console.error('Error fetching available instruments:', error);
+        throw error;
+    }
+};
+
+
   

@@ -121,14 +121,20 @@ const InstrumentRequests = ({ profile, baseUrl }) => {
             </thead>
             <tbody>
                 {fetchedData &&
-                fetchedData.map(({ uniqueId, createDate, resolveDate,requestData, userName, attendedBy }) => (
+                fetchedData.sort((a, b) => new Date(b.createDate) - new Date(a.createDate))
+                .map(({ uniqueId, createDate, resolveDate,requestData, userName, attendedBy }) => (
                   <tr key={uniqueId}>
                   <td>{uniqueId}</td>
                   <td>{requestData.quantityRequested}</td>
                   <td>{formatDate(createDate)}</td>
                   <td>{resolveDate !== null ? formatDate(resolveDate) : <p>Unresolved</p>}</td>
                   <td>{requestData.status}</td>
-                  {canCancel && requestData.status=== 'Pending'&&(
+                  
+                  <td><button onClick={() => navigate(
+            `/requestdetails?uniqueId=${uniqueId}`,
+                { state: { createDate: createDate, resolveDate: resolveDate, createdBy: userName, attendedBy: attendedBy }})}>Details</button>
+                </td>
+                {canCancel && requestData.status=== 'Pending'&&(
                     <React.Fragment>
                     <td>
                         <button onClick={() => {
@@ -145,9 +151,6 @@ const InstrumentRequests = ({ profile, baseUrl }) => {
                     )}
                 </React.Fragment>
                 )}
-                  <td><button onClick={() => navigate(
-            `/requestdetails?uniqueId=${uniqueId}`,
-                { state: { createDate: createDate, resolveDate: resolveDate, createdBy: userName, attendedBy: attendedBy }})}>Details</button></td>
                   
               </tr>
               

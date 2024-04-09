@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import './NewCheckout.css';
 import PopupMessage from './PopupMessage';
-const fetchCheckoutData = async (baseUrl, description = '', number = '', userId = '') => {
+const fetchCheckoutData = async (baseUrl, description = '', number = '', userId = '', profileId = '', username = '') => {
     const url = `${baseUrl}/checkouts`;
-    const body = JSON.stringify({ description, number, userId });
+    const body = JSON.stringify({ description, number, userId, profileId, username});
 
     try {
         const response = await fetch(url, {
@@ -165,7 +165,9 @@ const NewCheckout = ({ baseUrl, profile }) => {
             baseUrl,
             selectedInstrumentDescription,
             selectedInstrumentNumber,
-            selectedUserId
+            selectedUserId,
+            profile.databaseId,
+            profile.name
           );
           if (!checkoutData) {
             throw new Error('Failed to submit checkout');
