@@ -4,6 +4,7 @@ import { GrantInstrumentRequests} from '../util/Permissions';
 import Unauthorized from './Unauthorized';
 import AllInstrumentRequestTable from '../util/AllInstrumentRequestDetailsTable';
 import { getAvailableInstruments } from '../util/helpers';
+import {RequestPopup} from './RequestsPopup';
 
   const fetchData = async (baseUrl) => {
     
@@ -38,11 +39,12 @@ import { getAvailableInstruments } from '../util/helpers';
     const [instrumentOptions, setInstrumentOptions] = useState([]);
     const [instrumentChoices, setInstrumentChoices] = useState([]);
     const [totalQuantity, setTotalQuantity] = useState(0);
+    const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
+    const [selectedInstrumentChoices, setSelectedInstrumentChoices] = useState([{}]);
     
     useEffect(() => {
         const fetchData = async () => {
           if (!responseData.instrumentData) return; 
-          console.log('responseData:', responseData.instrumentData)
       
           try {
             const availableNumbersPromises = responseData.instrumentData.map(async item => {
@@ -52,8 +54,18 @@ import { getAvailableInstruments } from '../util/helpers';
             const availableNumbersData = await Promise.all(availableNumbersPromises);
             const mergedData = availableNumbersData.reduce((acc, curr) => ({ ...acc, ...curr }), {});
             const initialInstrumentChoices = initializeInstrumentChoices(responseData.instrumentData);
+            Object.keys(initialInstrumentChoices).forEach(requestId => {
+                const instrumentsObject = initialInstrumentChoices[requestId];
+                if ('requestId' in instrumentsObject) {
+                    delete instrumentsObject.requestId;
+                }
+            });
+            
+            console.log('initial instrument choices:', initialInstrumentChoices);
             setInstrumentChoices(initialInstrumentChoices);
             setInstrumentOptions(mergedData);
+            console.log('merged data:', mergedData);
+            console.log('initial instrument choices:', initialInstrumentChoices);
             const totalQuantity = responseData.instrumentData.reduce((acc, curr) => acc + curr.quantity, 0);
             setTotalQuantity(totalQuantity);
           } catch (error) {
@@ -65,11 +77,11 @@ import { getAvailableInstruments } from '../util/helpers';
       }, [baseUrl, responseData.instrumentData]);
 
     const getIndividualRequest = async (uniqueId, responseData) => {
+        resetState();
         setSelectedUniqueId(uniqueId);
         setSelectedCreatorId(responseData.creatorId);
         setSelectedCreatorName(responseData.creatorName);
         setResponseData(responseData);
-        console.log('response data from getIndividualRequest:', responseData);
         };
 
     useEffect(() => {
@@ -79,14 +91,15 @@ import { getAvailableInstruments } from '../util/helpers';
     }, [selectedCreatorId, instrumentsGranted, selectedId, selectedStatus, selectedSuccess, selectedUniqueId, selectedNotes, attendedBy, attendedById, selectedCreatorName, selectedCreatorId, instrumentsGranted]);
 
     const initializeInstrumentChoices = (data) => {
+        console.log('data:', data);
         return data.reduce((acc, item) => {
-          acc[item.instrument] = Array.from({ length: item.quantity }).map(() => '');
-          return acc;
+            acc[item.requestId] = {
+                [item.instrument]: Array.from({ length: item.quantity }).map(() => ''),
+                requestId: item.requestId
+            };
+            return acc;
         }, {});
-      };
-            
-      
-
+    };
     const rejectRequest = async (uniqueId, notes, creatorName, creatorId) => {
         setSelectedUniqueId(uniqueId);
         setSelectedStatus('Resolved');
@@ -94,9 +107,9 @@ import { getAvailableInstruments } from '../util/helpers';
         setSelectedNotes(notes);
         setSelectedCreatorName(creatorName);
         setSelectedCreatorId(creatorId);
+        setShowConfirmationPopup(false);
 
         try {
-            console.log(`state from admin component: ${selectedId}, ${selectedStatus}, ${selectedSuccess}, ${selectedUniqueId}, ${selectedNotes}, ${attendedBy}, ${attendedById}, ${selectedCreatorName}, ${selectedCreatorId}, ${instrumentsGranted}`)
             const response = await fetch(`${baseUrl}/requests`, {
                 method: 'PATCH',
                 headers: {
@@ -120,37 +133,91 @@ import { getAvailableInstruments } from '../util/helpers';
             if (data) {
                 resetState();
             }
-            // resetState();
         }
         catch (error) {
             console.error('Error rejecting request:', error);
         }
         
     };
-    const  handleSelectChange = (index, instrument, event) => {
+    const  handleSelectChange = (index, requestId, instrument, event) => {
         console.log('index:', index);
         const updatedInstrumentChoices = { ...instrumentChoices };
-        updatedInstrumentChoices[instrument][index] = event.target.value;
+        updatedInstrumentChoices[requestId][instrument][index] = event.target.value;
         setInstrumentChoices(updatedInstrumentChoices);
         console.log('instrumentChoices:', instrumentChoices);
       };
 
       const selectInstruments = async () => {
-        const selectedInstrumentsSet = new Set(); 
-        for (const instrument in instrumentChoices) {
-            const instrumentIds = instrumentChoices[instrument].filter(id => id !== '');
-            instrumentIds.forEach(id => selectedInstrumentsSet.add(id));
+        const selectedInstrumentChoices = {}; 
+        for (const requestId in instrumentChoices) {
+            const choice = instrumentChoices[requestId];
+            const selectedIdsSet = new Set();
+            for (const key in choice) {
+                const instrumentIds = choice[key];
+                instrumentIds.forEach(id => {
+                    if (id !== null && id !== '') {
+                        selectedIdsSet.add(id);
+                    }
+                });
+            }
+           if (selectedIdsSet.size>0) {selectedInstrumentChoices[requestId] = [...selectedIdsSet];}
         }
+        for (const key in selectedInstrumentChoices) {
+            if (!selectedInstrumentChoices[key].length) {
+                delete selectedInstrumentChoices[key];
+            }}
         
-        const selectedInstruments = Array.from(selectedInstrumentsSet); 
-        const success = selectedInstruments.length === 0 ? 'Fail' : totalQuantity - selectedInstruments.length === 0 ? 'Yes' : 'Partial';
+        for (let requestId in selectedInstrumentChoices) {
+            console.log('selected instrument choices:', selectedInstrumentChoices[requestId]);
+        };
+        setSelectedInstrumentChoices(selectedInstrumentChoices);
+        const filteredInstruments = Object.values(selectedInstrumentChoices)
+            .flat() 
+            .filter(instrument => instrument !== null && instrument !== '');
+        const success = filteredInstruments.length === 0 ? 'Fail' : totalQuantity - filteredInstruments.length === 0 ? 'Yes' : 'Partial';
+        const resolved = 'Resolved'
+        const notes = success === 'yes'? 'Your Instruments are ready for collection': 'We do not have enough instruments to service your request at this time';
         
         setSelectedSuccess(success);
-        setInstrumentsGranted(selectedInstruments);
-        setSelectedStatus('Resolved');
-        
-        console.log('selectedInstruments:', selectedInstruments);
-        console.log(`state from admin component selectInstruments: selected Id: ${selectedId}, selected Status: ${selectedStatus}, Selected success: ${success}, selected UniqueId:${selectedUniqueId}, selected notes: ${selectedNotes}, selected attended by:${attendedBy},  selected attendedBy id:${attendedById}, creatorName:${selectedCreatorName}, creator Id:${selectedCreatorId}, instruments granted:${selectedInstruments} resolved: ${selectedStatus} success: ${success}`);
+        setInstrumentsGranted(filteredInstruments);
+        setSelectedStatus(resolved);
+        setSelectedNotes(notes);
+        setShowConfirmationPopup(true);
+    };
+
+    useEffect(() => {
+        if (showConfirmationPopup) {
+            sendRequest();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [showConfirmationPopup]);
+
+    const sendRequest = async () => {
+        for ( const requestId in selectedInstrumentChoices) {
+            const response = await fetch(`${baseUrl}/requests`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    id: requestId, 
+                    status: selectedStatus, 
+                    success: selectedSuccess, 
+                    uniqueId: selectedUniqueId, 
+                    notes: selectedNotes, 
+                    attendedBy, 
+                    attendedById, 
+                    creatorName: selectedCreatorName, 
+                    creatorId: selectedCreatorId, 
+                    instrumentsGranted: selectedInstrumentChoices[requestId] }),
+            });
+            if (!response.ok) {
+                console.log('error:', response);
+                throw new Error('Failed to send request');
+            }
+           
+        }
+        resetState();
     };
     
 
@@ -165,6 +232,7 @@ import { getAvailableInstruments } from '../util/helpers';
         setSelectedCreatorName('');
         setSelectedCreatorId('');
         setInstrumentsGranted([]);
+        setShowConfirmationPopup(false);
         
     };
 
@@ -220,8 +288,8 @@ import { getAvailableInstruments } from '../util/helpers';
                                 <td>{item.instrument}</td>
                                 <td>
                                     <select 
-                                        value={instrumentChoices[item.instrument] && instrumentChoices[item.instrument][i]}
-                                        onChange={(event) => handleSelectChange(i, item.instrument, event)}
+                                        value={instrumentChoices[item.requestId] && instrumentChoices[item.requestId][item.instrument][i]}
+                                        onChange={(event) => handleSelectChange(i, item.requestId, item.instrument, event)}
                                     >
                                         <option value="">Select Number</option>
                                         {instrumentOptions[item.instrument]?.map((instrument, idx) => (
@@ -232,9 +300,15 @@ import { getAvailableInstruments } from '../util/helpers';
                             </tr>
                         ))
                     ))}
-                    <tr><td colSpan={2}> <button onClick={selectInstruments}>Confirm Selection</button></td></tr>
+                    <tr><td colSpan={2}> <button onClick={selectInstruments}>Submit</button></td></tr>
                 </tbody>
             </table>
+            {showConfirmationPopup && (
+                <RequestPopup 
+                    reset={resetState} 
+                    sendRequest={sendRequest} 
+                />
+            )}
            
         </div>
     )}

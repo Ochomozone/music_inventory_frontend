@@ -17,6 +17,17 @@ function Checkouts({baseUrl, profile}) {
     fetchCheckouts();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
+    if (timestamp){return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      // hour: '2-digit',
+      // minute: '2-digit',
+    });}
+    else{return null}
+  };
 
   const fetchCheckouts = async () => {
     try {
@@ -54,8 +65,7 @@ function Checkouts({baseUrl, profile}) {
         if (!response.ok) {
           throw new Error('Failed to turn in instrument');
         }
-        // Reload data after successful turn in
-        await fetchCheckouts();
+        // await fetchCheckouts();
       } catch (error) {
         setError(error.message);
       }
@@ -89,6 +99,7 @@ function Checkouts({baseUrl, profile}) {
               <th>Number</th>
               <th>Make</th>
               <th>Serial</th>
+              <th>Date</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -101,6 +112,7 @@ function Checkouts({baseUrl, profile}) {
                   <td>{instrument.number}</td>
                   <td>{instrument.make}</td>
                   <td>{instrument.serial}</td>
+                  <td>{formatDate(instrument.issued_on)}</td>
                   {canTurnInCheckout &&(<td>
                     <button onClick={() => handleTurnIn(instrument.id, instrument.user_name, instrument.description, instrument.number, instrument.user_id, profile)}>Turn In</button>
                   </td>)}

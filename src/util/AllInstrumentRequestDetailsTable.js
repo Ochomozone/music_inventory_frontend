@@ -3,7 +3,7 @@ import { ViewAllInstrumentRequests, GrantInstrumentRequests } from './Permission
 import { useNavigate } from 'react-router-dom';
 function AllInstrumentRequestTable({ requestData, profile, getIndividualRequest, rejectRequest }) {
     const navigate = useNavigate();
-    const [rejection, setRejection] = useState(false);
+    const [createNotes, setCreateNotes] = useState(false);
     const [notes, setNotes] = useState('');
     const [uniqueId, setUniqueId] = useState('');
     const [creatorName, setCreatorName] = useState('');
@@ -29,7 +29,7 @@ function AllInstrumentRequestTable({ requestData, profile, getIndividualRequest,
 
     const resetState = () => {
         setNotes('');
-        setRejection(false);
+        setCreateNotes(false);
         setUniqueId('');
         setCreatorName('');
         setCreatorId('');
@@ -46,8 +46,7 @@ function AllInstrumentRequestTable({ requestData, profile, getIndividualRequest,
     
       const handleSubmitClick = async () => {
        rejectRequest(uniqueId, notes, creatorName, creatorId);
-       setRejection(false);
-       console.log('state from table component:', uniqueId, notes, creatorName, creatorId)
+       setCreateNotes(false);
         
       };
 
@@ -112,7 +111,7 @@ function AllInstrumentRequestTable({ requestData, profile, getIndividualRequest,
                             <button
                               disabled={status !== 'Pending'}
                               onClick={() => {
-                                setRejection(true);
+                                setCreateNotes(true);
                                 setUniqueId(uniqueId);
                                 setCreatorName(creatorName);
                                 setCreatorId(creatorId);
@@ -127,8 +126,8 @@ function AllInstrumentRequestTable({ requestData, profile, getIndividualRequest,
                             <button
                               disabled={status !== 'Pending'}
                               onClick={() => {
+                                setCreateNotes(false);
                                 getIndividualRequest(uniqueId, requestData[uniqueId]);
-                                // Additional actions if needed
                               }}
                             >
                               Attend
@@ -141,7 +140,7 @@ function AllInstrumentRequestTable({ requestData, profile, getIndividualRequest,
                 </tbody>
               </table>
       
-              {rejection && (
+              {createNotes && (
                 <div className="form-container">
                   <form>
                     <label htmlFor="notes">Enter notes:</label>

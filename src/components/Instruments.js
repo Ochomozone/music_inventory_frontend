@@ -85,6 +85,7 @@ function Instruments({ baseUrl, profile }) {
             <tr>
               <th>Description</th>
               <th>Number</th>
+              <th>Serial</th>
               <th>Make</th>
               <th>Location</th>
               <th>Details</th>
@@ -97,6 +98,7 @@ function Instruments({ baseUrl, profile }) {
     <tr key={instrument.id}>
       <td>{instrument.description}</td>
       <td>{instrument.number}</td>
+      <td>{instrument.serial}</td>
       <td>{instrument.make}</td>
       <td>{instrument.location ? instrument.location : instrument.user_name}</td>
       <td>
