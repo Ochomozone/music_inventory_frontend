@@ -20,7 +20,6 @@ function AllInstrumentRequestTable({ requestData, profile, getIndividualRequest,
       };
     const canViewAllInstrumentRequests = ViewAllInstrumentRequests(profile);
     const canGrant = GrantInstrumentRequests(profile);
-    // Function to calculate total quantity
     const calculateTotalQuantity = (instrumentData) => {
         return instrumentData.reduce((acc, curr) => acc + curr.quantity, 0);
     };
@@ -141,7 +140,7 @@ function AllInstrumentRequestTable({ requestData, profile, getIndividualRequest,
               </table>
       
               {createNotes && (
-                <div className="form-container">
+                <div className="popup">
                   <form>
                     <label htmlFor="notes">Enter notes:</label>
                     <input

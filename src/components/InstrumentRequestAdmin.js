@@ -61,11 +61,8 @@ import {RequestPopup} from './RequestsPopup';
                 }
             });
             
-            console.log('initial instrument choices:', initialInstrumentChoices);
             setInstrumentChoices(initialInstrumentChoices);
             setInstrumentOptions(mergedData);
-            console.log('merged data:', mergedData);
-            console.log('initial instrument choices:', initialInstrumentChoices);
             const totalQuantity = responseData.instrumentData.reduce((acc, curr) => acc + curr.quantity, 0);
             setTotalQuantity(totalQuantity);
           } catch (error) {
@@ -91,7 +88,6 @@ import {RequestPopup} from './RequestsPopup';
     }, [selectedCreatorId, instrumentsGranted, selectedId, selectedStatus, selectedSuccess, selectedUniqueId, selectedNotes, attendedBy, attendedById, selectedCreatorName, selectedCreatorId, instrumentsGranted]);
 
     const initializeInstrumentChoices = (data) => {
-        console.log('data:', data);
         return data.reduce((acc, item) => {
             acc[item.requestId] = {
                 [item.instrument]: Array.from({ length: item.quantity }).map(() => ''),
@@ -140,11 +136,9 @@ import {RequestPopup} from './RequestsPopup';
         
     };
     const  handleSelectChange = (index, requestId, instrument, event) => {
-        console.log('index:', index);
         const updatedInstrumentChoices = { ...instrumentChoices };
         updatedInstrumentChoices[requestId][instrument][index] = event.target.value;
         setInstrumentChoices(updatedInstrumentChoices);
-        console.log('instrumentChoices:', instrumentChoices);
       };
 
       const selectInstruments = async () => {
@@ -167,16 +161,13 @@ import {RequestPopup} from './RequestsPopup';
                 delete selectedInstrumentChoices[key];
             }}
         
-        for (let requestId in selectedInstrumentChoices) {
-            console.log('selected instrument choices:', selectedInstrumentChoices[requestId]);
-        };
         setSelectedInstrumentChoices(selectedInstrumentChoices);
         const filteredInstruments = Object.values(selectedInstrumentChoices)
             .flat() 
             .filter(instrument => instrument !== null && instrument !== '');
         const success = filteredInstruments.length === 0 ? 'Fail' : totalQuantity - filteredInstruments.length === 0 ? 'Yes' : 'Partial';
         const resolved = 'Resolved'
-        const notes = success === 'yes'? 'Your Instruments are ready for collection': 'We do not have enough instruments to service your request at this time';
+        const notes = success === 'Yes'? 'Your Instruments are ready for collection': 'We do not have enough instruments to service your request at this time';
         
         setSelectedSuccess(success);
         setInstrumentsGranted(filteredInstruments);

@@ -51,7 +51,6 @@ const formatDate = (timestamp) => {
 
     useEffect(() => {
         const fetchDataFromBackend = async () => {
-            console.log('state:', location.state);
             const data = await fetchData(baseUrl, uniqueId);
             if (data) {
                 setFetchedData(data);

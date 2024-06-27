@@ -89,7 +89,14 @@ function Checkouts({baseUrl, profile}) {
       </NavLink>
       </div>)}
       <h1 className='centered-text'>Instrument Checkouts</h1>
-      {canViewCheckouts &&(<CheckoutSearch  className="navlink-button" onDataFetched={handleDataFetched} baseUrl={`${baseUrl}/checkouts`} onClear={handleClearFields}/>)}
+      {canViewCheckouts && (
+        <CheckoutSearch
+          className="navlink-button"
+          onDataFetched={handleDataFetched}
+          baseUrl={`${baseUrl}/checkouts`}
+          onClear={handleClearFields}
+        />
+)}
       {canViewCheckouts ? (<div className="table-container">
         <table className="table">
           <thead>

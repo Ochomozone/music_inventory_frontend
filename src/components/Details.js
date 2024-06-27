@@ -81,7 +81,7 @@ const Detail = ({ baseUrl }) => {
         (instrument[key] && (
           <tr className='container-pair' key={index}>
             <td className='left-container'>
-              {key === 'description' ? 'TYPE' : key === 'number' ? 'CASE NUMBER' : key.toUpperCase()}:    
+              {key === 'user_name' ? 'USER NAME' : key === 'description' ? 'TYPE' : key === 'number' ? 'CASE NUMBER' : key.toUpperCase()}:    
             </td>
             <td className='right-container' style={{ marginLeft: '10px' }}>
               {instrument[key]}
@@ -100,7 +100,7 @@ const Detail = ({ baseUrl }) => {
         (user[key] && (
           <tr className='container-pair' key={index}>
             <td className='left-container'>
-              {key === 'full_name' ? 'NAME' : key === 'grade_level' ? 'GRADE' : key.toUpperCase()}:    
+              { key === 'full_name' ? 'NAME' : key === 'grade_level' ? 'GRADE' : key.toUpperCase()}:    
             </td>
             <td className='right-container' style={{ marginLeft: '10px' }}>
             {key === 'active' ? (user[key] ? 'TRUE' : 'FALSE') : user[key]}
