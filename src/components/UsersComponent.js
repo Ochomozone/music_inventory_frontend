@@ -106,7 +106,7 @@ function UsersComponent({ baseUrl, profile }) {
   
             const formattedData = jsonData
               .map(record => {
-                const email = record.FIELD4 ? record.FIELD4.toLowerCase() : ""; // Ensure email exists, then lowercase
+                const email = record.FIELD4 ? record.FIELD4.toLowerCase() : ""; 
                 if (!email) {
                   return null; // Skip the record if email is missing or blank
                 }
@@ -187,9 +187,64 @@ function UsersComponent({ baseUrl, profile }) {
   
     return { results, errors };
   };
+
+  const createUsers = async (data, baseUrl) => {
+    const results = [];
+    const errors = [];
+    for (const record of data) {
+        const payload = {
+            email: record.email,
+            first_name: record.firstName,
+            last_name: record.lastName,
+            student_number: record.number,
+            grade_level: record.grade_level, 
+        };
+
+        try {
+            const response = await fetch(`${baseUrl}/students`, {
+                method: 'POST', // Use POST for creating new users
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                errors.push({
+                    record,
+                    error: errorData || 'Failed to create user.',
+                    status: response.status,
+                });
+            } else {
+                const resultData = await response.json();
+                results.push(resultData);
+            }
+        } catch (error) {
+            errors.push({
+                record,
+                error: error.message,
+            });
+        }
+    }
+
+    return { results, errors };
+};
+
+const handleCreateUsers = async () => {
+    const { results, errors } = await createUsers(newUsers, baseUrl); 
+
+    if (errors.length > 0) {
+        console.error('Errors occurred while creating users:', errors);
+    } else {
+        console.log('Successfully created users:', results);
+    }
+    setNewUsers([]); // Resetting the newUsers array
+};
+
   
   const handleUpdateUsers = async () => {
-    const { results, errors } = await updateUsers(records, baseUrl);
+    const { results, errors } = await updateUsers(updatedUsers, baseUrl);
   
     if (errors.length > 0) {
       console.error('Errors occurred while updating users:', errors);
@@ -277,7 +332,8 @@ function UsersComponent({ baseUrl, profile }) {
 
           {newUsers.length > 0 && (
             <div className="table-container">
-              <h2>New Users</h2>
+              <h2>Enter ({newUsers.length }) New Students</h2>
+              <button onClick={handleCreateUsers}>Enter New Students</button>
               <table className="table">
                 <thead>
                   <tr>
