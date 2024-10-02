@@ -142,6 +142,7 @@ const History = ({ baseUrl, profile }) => {
                 <th>Description</th>
                 <th>Number</th>
                 <th>Name</th>
+                <th>Location</th>
                 <th>Created By</th>
               </tr>
             </thead>
@@ -153,6 +154,7 @@ const History = ({ baseUrl, profile }) => {
                   <td>{item.description}</td>
                   <td>{item.number}</td>
                   <td>{item.full_name}</td>
+                  <td>{item.location}</td>
                   <td>{item.created_by}</td>
                 </tr>
               ))}

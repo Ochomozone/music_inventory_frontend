@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import '../index.css';
 import { NavLink } from 'react-router-dom';
 import SwapCasePopup from './SwapCasePopup'; 
+import PopupMessage from './PopupMessage';
 
 function Instruments({ baseUrl, profile }) {
   const [instruments, setInstruments] = useState([]);
@@ -14,7 +15,8 @@ function Instruments({ baseUrl, profile }) {
   const [error, setError] = useState(null);
   const [showSwapPopup, setShowSwapPopup] = useState(false);
   const [selectedInstrument, setSelectedInstrument] = useState(null);
-
+  const [swapMessage, setSwapMessage] = useState('');
+  const [showPopupResponse, setShowPopupResponse] = useState(false);
   const canViewInstruments = ViewInstruments(profile);
   const canCreateNewInstrument = CreateNewInstrument(profile);
   const navigate = useNavigate();
@@ -50,6 +52,9 @@ function Instruments({ baseUrl, profile }) {
     await fetchInstruments();
   };
 
+  // const closeSwapResponsePopup = () => {
+  //   setShowPopupResponse(false);
+
   const getSwapItemId2 = async (description, number2) => {
     try {
       const response = await fetch(`${baseUrl}/instruments?description=${description}&number=${number2}`);
@@ -59,15 +64,21 @@ function Instruments({ baseUrl, profile }) {
       const data = await response.json();
       return data[0].id;
     } catch (error) {
-      setError(error.message);
+      setSwapMessage(error.message);
+      // setError(error.message);
     }
   }
 
   const handleSwap = async (description, code, itemId1, number1, number2) => {
     try {
       const itemId2 = await getSwapItemId2(description, number2);
-      if (!itemId2) {
-        throw new Error('Invalid number for swapping');
+      console.log(itemId2)
+      if (!itemId2 ) {
+        setSwapMessage('Invalid number for swapping');
+        setShowPopupResponse(true);
+        return;
+        // throw new Error('That case number does not exist. Please try again.');
+        
       }
 
       const response = await fetch(`${baseUrl}/instruments/swap`, {
@@ -76,11 +87,15 @@ function Instruments({ baseUrl, profile }) {
         body: JSON.stringify({ code, id_1: itemId1, id_2: itemId2, created_by: profile.username }),
       });
       if (!response.ok) {
-        throw new Error('Failed to swap cases');
+        setSwapMessage('An error occured on our server. Cases not swapped');
+        setShowPopupResponse(true);
+
+        // throw new Error('An error occured on our server. Cases not swapped');
       }
       await fetchInstruments();
     } catch (error) {
-      setError(error.message);
+      setSwapMessage(error.message);
+      // setError(error.message);
     }
   };
 
@@ -176,6 +191,9 @@ function Instruments({ baseUrl, profile }) {
           onClose={handleCloseSwapPopup}
           onSwap={handleSwap}
         />
+      )}
+      {showPopupResponse && (
+        <PopupMessage message={swapMessage} onClose={() => setShowPopupResponse(false)} />
       )}
     </div>
   );
