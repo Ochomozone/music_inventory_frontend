@@ -3,6 +3,7 @@ import UsersSearch from '../util/UsersSearch';
 import '../index.css';
 import { ViewUsers } from '../util/Permissions';
 import Unauthorized from './Unauthorized';
+import { getClasses } from '../util/helpers';
 import { useNavigate } from 'react-router-dom';
 
 function UsersComponent({ baseUrl, profile }) {
@@ -10,10 +11,37 @@ function UsersComponent({ baseUrl, profile }) {
   const [records, setRecords] = useState([]); // State for records from JSON upload
   const [searchedUsers, setSearchedUsers] = useState([]); // State for searched users
   const [existingUsers, setExistingUsers] = useState([]); // State for existing users
+  
   const [newUsers, setNewUsers] = useState([]); // State for new unmatched users
   const [updatedUsers, setUpdatedUsers] = useState([]); // State for updated users
+  const [error, setError] = useState(null); // State for error messages
+  const [userClasses, setUserClasses] = useState({}); // Store classes for each user
+
+  // Function to fetch classes and update state
+  const fetchUserClasses = async () => {
+    const classesData = {};
+
+    await Promise.all(
+      searchedUsers.map(async (user) => {
+        const classes = await getClasses(baseUrl, user.id);
+        classesData[user.id] = classes; // Store classes for each user by their ID
+      })
+    );
+
+    setUserClasses(classesData); // Update state after fetching all classes
+  };
+
+  // Fetch classes whenever searchedUsers changes
+  useEffect(() => {
+    if (searchedUsers.length > 0) {
+      fetchUserClasses();
+    }
+  }, [searchedUsers]);
 
   const canViewUsers = ViewUsers(profile);
+  
+
+
 
   // Fetch the existing users when the component mounts
   useEffect(() => {
@@ -55,6 +83,9 @@ function UsersComponent({ baseUrl, profile }) {
       findNewUsers(records);
     }
   }, [records, existingUsers]);
+
+  //useEffect to find all existing classes
+
 
   useEffect(() => {
     const findUpdatedUsers = (uploadedRecords) => {
@@ -273,34 +304,53 @@ const handleCreateUsers = async () => {
           <div className="upload-container">
             <input type="file" accept="application/json" onChange={handleFileUpload} />
           </div>
-          {searchedUsers && searchedUsers.length > 0 && (
-            <div className="table-container">
-              <h2>Users</h2>
-              <table className="table">
-                <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Division</th>
-                  <th>Grade Level</th>
-                  <th>Class</th>
-                  <th>Details</th>
-                </tr>
-                </thead>
-                <tbody>
-                  {searchedUsers.map((user, index) => (
-                    <tr key={index}>
-                      <td>{user.full_name}</td>
-                      <td>{user.division}</td>
-                      <td>{user.grade_level}</td>
-                      <td>{user.class}</td>
-                      <td>{user.grade_level}</td>
-                      <td> <button onClick={() => navigate(`/details?databaseId=${user.id}`, { state: { user: user } })}>Details </button></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          {searchedUsers.length > 0 && (
+      <table className="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Division</th>
+            <th>Grade</th>
+            <th>Classes</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          {searchedUsers.map((user, index) => {
+            const classes = userClasses[user.id] || []; // Get classes for the user
+
+            return (
+              <tr key={index}>
+                <td>{user.full_name}</td>
+                <td>{user.division}</td>
+                <td>{user.grade_level}</td>
+                <td>
+                  {classes.length > 0 ? (
+                    <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
+                    {classes.map((classItem, i) => (
+                      <li key={i}>{classItem}</li>
+                    ))}
+                  </ul>
+                  
+                  ) : (
+                    <p></p>
+                  )}
+                </td>
+                <td>
+                  <button
+                    onClick={() => navigate(`/details?databaseId=${user.id}`, { state: { user: user } })}
+                  >
+                    Details
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    )}
+
+
           {updatedUsers.length > 0 && (
             <div className="table-container">
               <h2>Update ({updateUsers.length +1}) Students</h2>

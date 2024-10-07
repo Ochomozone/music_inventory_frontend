@@ -99,5 +99,23 @@ export const getAvailableNumbers = async (baseUrl, description) => {
     }
 };
 
+export const getClasses = async (baseUrl, userId) => {
+  try {
+    const response = await fetch(`${baseUrl}/classes/students?userId=${userId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      return [];
+    }
+    const classesData = await response.json();
+    return classesData.map(item => item.class_name);
+  } catch (error) {
+    console.error(`Error fetching classes data for ${userId}:`, error);
+    return [];
+  }
+};
+
 
   
