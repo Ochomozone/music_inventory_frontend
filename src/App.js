@@ -16,6 +16,7 @@ import RequestDetails from './components/InstrumentRequestDetails';
 import NewRequest from './components/NewInstrumentRequest';
 import RequestAdmin from './components/InstrumentRequestAdmin';
 import Takestock from './components/StockTaking';
+import Classes from './components/Classes';
 
 const baseUrl = 'http://localhost:4001';
 
@@ -113,6 +114,7 @@ function App() {
             <Route path="/requestdetails" element={<RequestDetails baseUrl={baseUrl} profile={profile} />} />
             <Route path="/requestadmin" element={<RequestAdmin baseUrl={baseUrl} profile={profile} />} />
             <Route path="/stockcheck" element={<Takestock baseUrl={baseUrl} profile={profile} />} />
+            <Route path="/classes" element={<Classes baseUrl={baseUrl} profile={profile} />} />
 
 
           </>
