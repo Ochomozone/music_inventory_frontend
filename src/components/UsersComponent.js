@@ -4,39 +4,45 @@ import '../index.css';
 import { ViewUsers } from '../util/Permissions';
 import Unauthorized from './Unauthorized';
 import { getClasses } from '../util/helpers';
-import { useNavigate } from 'react-router-dom';
+import PopupMessage from './PopupMessage';
+// import { useNavigate } from 'react-router-dom';
+import DisplaySearchedUsers from './UsersComponentSearchedUsers';
+import UpdatedUsersTable from './UsersComponentDisplayUpdateUsers';
+import NewUsersTable from './UsersComponentNewUsersTable';
+import LoadingSpinner from '../util/LoadingSpinner';
 
 function UsersComponent({ baseUrl, profile }) {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [records, setRecords] = useState([]); // State for records from JSON upload
   const [searchedUsers, setSearchedUsers] = useState([]); // State for searched users
   const [existingUsers, setExistingUsers] = useState([]); // State for existing users
-  
   const [newUsers, setNewUsers] = useState([]); // State for new unmatched users
   const [updatedUsers, setUpdatedUsers] = useState([]); // State for updated users
-  const [error, setError] = useState(null); // State for error messages
   const [userClasses, setUserClasses] = useState({}); // Store classes for each user
-
-  // Function to fetch classes and update state
-  const fetchUserClasses = async () => {
-    const classesData = {};
-
-    await Promise.all(
-      searchedUsers.map(async (user) => {
-        const classes = await getClasses(baseUrl, user.id);
-        classesData[user.id] = classes; // Store classes for each user by their ID
-      })
-    );
-
-    setUserClasses(classesData); // Update state after fetching all classes
-  };
+  const [popupMessage, setPopupMessage] = useState(''); // State for popup message
+  const [loading, setLoading] = useState(false); // State for loading status
 
   // Fetch classes whenever searchedUsers changes
   useEffect(() => {
+    setLoading(true);
+    const fetchUserClasses = async () => {
+      const classesData = {};
+
+      await Promise.all(
+        searchedUsers.map(async (user) => {
+          const classes = await getClasses(baseUrl, user.id);
+          classesData[user.id] = classes; // Store classes for each user by their ID
+        })
+      );
+
+      setUserClasses(classesData); // Update state after fetching all classes
+    };
+
     if (searchedUsers.length > 0) {
       fetchUserClasses();
+      setLoading(false);
     }
-  }, [searchedUsers]);
+  }, [searchedUsers, baseUrl]);
 
   const canViewUsers = ViewUsers(profile);
   
@@ -45,21 +51,23 @@ function UsersComponent({ baseUrl, profile }) {
 
   // Fetch the existing users when the component mounts
   useEffect(() => {
+    setLoading(true);
     const fetchExistingUsers = async () => {
       try {
         const response = await fetch(`${baseUrl}/users`);
         if (!response.ok) {
-          throw new Error('Failed to fetch existing users');
+          setPopupMessage('Failed to fetch existing users');
         }
         const data = await response.json();
         setExistingUsers(data); 
       } catch (error) {
-        console.error('Error fetching existing users:', error);
+        setPopupMessage('Failed to fetch existing users: ' + error.message);
       }
     };
     if (canViewUsers) {
       fetchExistingUsers();
     }
+    setLoading(false);
   }, [canViewUsers, baseUrl]);
 
   const handleDataFetched = (data) => {
@@ -68,6 +76,7 @@ function UsersComponent({ baseUrl, profile }) {
 
   // Call findNewUsers when records are updated
   useEffect(() => {
+    setLoading(true);
     const findNewUsers = (uploadedRecords) => {
       if (existingUsers.length === 0) {
         console.warn('No existing users to compare with.');
@@ -82,12 +91,13 @@ function UsersComponent({ baseUrl, profile }) {
     if (records.length > 0) {
       findNewUsers(records);
     }
+    setLoading(false);
   }, [records, existingUsers]);
 
   //useEffect to find all existing classes
 
-
   useEffect(() => {
+    setLoading(true);
     const findUpdatedUsers = (uploadedRecords) => {
       if (existingUsers.length === 0) {
         console.warn('No existing users to compare with.');
@@ -116,11 +126,14 @@ function UsersComponent({ baseUrl, profile }) {
     if (records.length > 0) {
       findUpdatedUsers(records);
     }
+    setLoading(false);
   }, [records, existingUsers]);
 
   // Function to handle JSON file upload
   const handleFileUpload = (event) => {
+    setSearchedUsers([]);
     handleClearFields();
+   
     const file = event.target.files[0];
     
     if (file && file.type === 'application/json') {
@@ -161,19 +174,20 @@ function UsersComponent({ baseUrl, profile }) {
               .filter(record => record !== null); // Filter out null records (where email is missing)
   
             formattedData.sort((a, b) => a.lastName.localeCompare(b.lastName));
+            setPopupMessage(`Uploaded ${formattedData.length} records`);
   
             setRecords(formattedData); // Set the uploaded records
           } else {
-            console.error('Uploaded file does not contain an array');
+            setPopupMessage('Uploaded file does not contain an valid records');
           }
         } catch (error) {
-          console.error('Error parsing JSON file:', error);
+          setPopupMessage('Error parsing JSON file: ' + error.message);
         }
       };
       
       reader.readAsText(file);
     } else {
-      alert('Please upload a valid JSON file');
+      setPopupMessage('Please upload a valid JSON file');
     }
   };
 
@@ -263,34 +277,51 @@ function UsersComponent({ baseUrl, profile }) {
 };
 
 const handleCreateUsers = async () => {
+    setLoading(true);
     const { results, errors } = await createUsers(newUsers, baseUrl); 
 
     if (errors.length > 0) {
-        console.error('Errors occurred while creating users:', errors);
+        setPopupMessage('Errors occurred while creating users : ' + errors);
     } else {
-        console.log('Successfully created users:', results);
+        setPopupMessage(`Successfully created (${results.length})users :`  );
     }
     setNewUsers([]); // Resetting the newUsers array
+    setLoading(false);
 };
 
   
   const handleUpdateUsers = async () => {
+    setLoading(true);
     const { results, errors } = await updateUsers(updatedUsers, baseUrl);
   
     if (errors.length > 0) {
-      console.error('Errors occurred while updating users:', errors);
+      setPopupMessage('Errors occurred while updating users : ' + errors);
     } else {
-      console.log('Successfully updated users:', results);
+      // console.log('Successfully updated users:', results);
+      setPopupMessage(`Successfully updated (${results.length}) users :`  );
     }
     setUpdatedUsers([]);
+    setLoading(false);
   };
 
   const handleClearFields = () => {
     setRecords([]);
     setNewUsers([]);
     setUpdatedUsers([]);
+    setPopupMessage('');
   };
-  
+  const handlePopupClose = () => {
+    setPopupMessage('');
+  };
+  if (loading) {
+    return <LoadingSpinner />;
+  };
+  if (popupMessage) {
+    return (
+      <PopupMessage message={popupMessage} onClose={handlePopupClose} />
+    );
+  };
+
 
   return (
     <div className='container'>
@@ -299,114 +330,27 @@ const handleCreateUsers = async () => {
           <div className='centered-text'>
             <h1>Users</h1>
           </div>
-          <UsersSearch baseUrl={`${baseUrl}`} onDataFetched={handleDataFetched} />
-
-          <div className="upload-container">
-            <input type="file" accept="application/json" onChange={handleFileUpload} />
+          <div className='container-pair'>
+            <div className="left-container">
+              <div><h2>Upload Users</h2>
+              <input type="file" accept="application/json" onChange={handleFileUpload} />
+              </div>
+            </div>
+            <div className="right-container">
+            <UsersSearch baseUrl={`${baseUrl}`} onDataFetched={handleDataFetched} />
+            </div>
           </div>
           {searchedUsers.length > 0 && (
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Division</th>
-            <th>Grade</th>
-            <th>Classes</th>
-            <th>Details</th>
-          </tr>
-        </thead>
-        <tbody>
-          {searchedUsers.map((user, index) => {
-            const classes = userClasses[user.id] || []; // Get classes for the user
-
-            return (
-              <tr key={index}>
-                <td>{user.full_name}</td>
-                <td>{user.division}</td>
-                <td>{user.grade_level}</td>
-                <td>
-                  {classes.length > 0 ? (
-                    <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-                    {classes.map((classItem, i) => (
-                      <li key={i}>{classItem}</li>
-                    ))}
-                  </ul>
-                  
-                  ) : (
-                    <p></p>
-                  )}
-                </td>
-                <td>
-                  <button
-                    onClick={() => navigate(`/details?databaseId=${user.id}`, { state: { user: user } })}
-                  >
-                    Details
-                  </button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            <DisplaySearchedUsers users={searchedUsers} userClasses={userClasses}  clearPopup={handlePopupClose} />
     )}
 
 
           {updatedUsers.length > 0 && (
-            <div className="table-container">
-              <h2>Update ({updateUsers.length +1}) Students</h2>
-              <button onClick={handleUpdateUsers}>Update Students</button>
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Number</th>
-                    <th>Last Name</th>
-                    <th>First Name</th>
-                    <th>Email</th>
-                    <th>Grade Level</th> 
-                  </tr>
-                </thead>
-                <tbody>
-                  {updatedUsers.map((record, index) => (
-                    <tr key={index}>
-                      <td>{record.number}</td>
-                      <td>{record.lastName}</td>
-                      <td>{record.firstName}</td>
-                      <td>{record.email}</td>
-                      <td>{record.grade_level}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <UpdatedUsersTable updatedUsers={updatedUsers} handleUpdateUsers={handleUpdateUsers} clearPopup={handlePopupClose} />
           )}
 
           {newUsers.length > 0 && (
-            <div className="table-container">
-              <h2>Enter ({newUsers.length }) New Students</h2>
-              <button onClick={handleCreateUsers}>Enter New Students</button>
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Number</th>
-                    <th>Last Name</th>
-                    <th>First Name</th>
-                    <th>Email</th>
-                    <th>Grade Level</th> 
-                  </tr>
-                </thead>
-                <tbody>
-                  {newUsers.map((user, index) => (
-                    <tr key={index}>
-                      <td>{user.number}</td>
-                      <td>{user.lastName}</td>
-                      <td>{user.firstName}</td>
-                      <td>{user.email}</td>
-                      <td>{user.grade_level}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <NewUsersTable newUsers={newUsers} handleCreateUsers={handleCreateUsers} clearPopup={handlePopupClose} />
           )}
         </div>
       ) : (

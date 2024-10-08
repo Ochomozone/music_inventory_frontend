@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
+import PopupMessage from './components/PopupMessage';
+import LoadingSpinner from './util/LoadingSpinner';
 import NavigationBar from './components/NavBar';
 import Home from './components/Home';
 import Instruments from './components/Instruments';
@@ -22,23 +24,31 @@ const baseUrl = 'http://localhost:4001';
 
 function App() {
   const [profile, setProfile] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);  
+  const [isAuthenticating, setIsAuthenticating] = useState(false); 
+  const [errorMessage,  setErrorMessage] = useState(null);
   const navigate = useNavigate();
 
   // Google login hook
   const login = useGoogleLogin({
+    uxMode: 'redirect',
     onSuccess: (codeResponse) => {
-      // Send the codeResponse to the backend to get the user profile
+      setIsAuthenticating(true);
       sendTokenToBackend(codeResponse.access_token);
     },
-    onError: (error) => console.log('Login Failed:', error)
+    onError: (error) => setErrorMessage(error)
   });
 
   useEffect(() => {
     const storedProfile = sessionStorage.getItem('profile');
     if (storedProfile) {
       setProfile(JSON.parse(storedProfile));
+      setIsLoading(false);
+    } else {
+      setIsLoading(false);
+      navigate('/');
     }
-  }, []);
+  }, [navigate]);
 
   // Function to send the access token to the backend
   const sendTokenToBackend = (accessToken) => {
@@ -46,44 +56,30 @@ function App() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`
+        'Authorization': `Bearer ${accessToken}`,
       },
     })
-    .then(response => {
-      if (response.ok) {
-        // Save the access token in local storage
+      .then(response => {
+        if (response.ok) {
+          return response.json(); // Get the user profile data
+        } else {
+          setErrorMessage('Failed to authenticate');
+          throw new Error('Failed to authenticate with the backend');
+          
+        }
+      })
+      .then(userProfile => {
+        // Save access token and profile data
         localStorage.setItem('access_token', accessToken);
-        fetchUserProfile();
-      } else {
-        console.error('Failed to send access token to the backend');
-      }
-    })
-    .catch(error => {
-      console.error('Error sending access token:', error);
-    });
-  };
-
-  // Function to fetch user profile from the backend
-  const fetchUserProfile = () => {
-    fetch(`${baseUrl}/user/profile`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-      }
-    })
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        throw new Error('Failed to fetch user profile');
-      }
-    })
-    .then(data => {
-      setProfile(data);
-      sessionStorage.setItem('profile', JSON.stringify(data));
-    })
-    .catch(error => {
-      console.error('Error fetching user profile:', error);
-    });
+        setProfile(userProfile);
+        sessionStorage.setItem('profile', JSON.stringify(userProfile));
+        setIsAuthenticating(false); // Stop spinner after fetching profile
+      })
+      .catch(error => {
+        console.error('Error during authentication:', error);
+        setErrorMessage('Failed to authorise user in database: Contact the app admin');
+        setIsAuthenticating(false); // Stop spinner in case of error
+      });
   };
 
   // Function to handle user logout
@@ -93,6 +89,21 @@ function App() {
     navigate('/');
     sessionStorage.removeItem('profile');
   };
+  const closePopupMessage = () => {
+    setErrorMessage(null)
+  }
+  if (errorMessage) {
+    return (
+      <PopupMessage onClose={closePopupMessage} message={errorMessage}/>
+    )
+  }
+ 
+
+
+  // If the app is checking for stored profile or authenticating, show the loading spinner
+  if (isLoading || isAuthenticating) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div>
@@ -103,7 +114,7 @@ function App() {
           <>
             <Route path="/instruments" element={<Instruments baseUrl={baseUrl} profile={profile} />} />
             <Route path="/checkouts" element={<Checkouts baseUrl={baseUrl} profile={profile}/>} />
-            <Route path="/users" element={<UsersComponent baseUrl={`${baseUrl}`} profile={profile}/>} />
+            <Route path="/users" element={<UsersComponent baseUrl={baseUrl} profile={profile}/>} />
             <Route path="/newcheckout" element={<NewCheckout baseUrl={baseUrl} profile={profile}/>} />
             <Route path="/newinstrument" element={<NewInstrument baseUrl={baseUrl} profile={profile}/>} />
             <Route path="/history" element={<History baseUrl={baseUrl} profile={profile}/>} />
@@ -115,8 +126,6 @@ function App() {
             <Route path="/requestadmin" element={<RequestAdmin baseUrl={baseUrl} profile={profile} />} />
             <Route path="/stockcheck" element={<Takestock baseUrl={baseUrl} profile={profile} />} />
             <Route path="/classes" element={<Classes baseUrl={baseUrl} profile={profile} />} />
-
-
           </>
         )}
       </Routes>

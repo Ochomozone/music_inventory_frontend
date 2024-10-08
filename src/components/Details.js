@@ -56,8 +56,9 @@ const Detail = ({ baseUrl }) => {
   const number = searchParams.get('number') || '';
   const instrument = location.state.instrument;
   const user = location.state.user;
+  const classes = location.state.classes;
   const instrumentKeysOrder = ['family', 'description', 'make', 'model', 'serial', 'legacy_code', 'code', 'number', 'state', 'location', 'user_name', 'checkout_date', 'return_date'];
-  const userKeysOrder = ['full_name', 'role', 'email', 'division', 'grade_level', 'class', 'active'];
+  const userKeysOrder = ['full_name', 'role', 'email', 'division', 'grade_level', 'active'];
   useEffect(() => {
     const fetchDataAndUpdate = async () => {
       const data = await fetchData(baseUrl, userName,  description, number, databaseId);
@@ -75,42 +76,55 @@ const Detail = ({ baseUrl }) => {
         <h2>Details</h2>
       </div>
       {instrument && (
-  <table>
-    <tbody>
-      {instrumentKeysOrder.map((key, index) => (
-        (instrument[key] && (
-          <tr className='container-pair' key={index}>
-            <td className='left-container'>
-              {key === 'user_name' ? 'USER NAME' : key === 'description' ? 'TYPE' : key === 'number' ? 'CASE NUMBER' : key.toUpperCase()}:    
-            </td>
-            <td className='right-container' style={{ marginLeft: '10px' }}>
-              {instrument[key]}
-            </td>
-          </tr>
-        ))
-      ))}
-    </tbody>
-  </table>
-)}
+        <table>
+          <tbody>
+            {instrumentKeysOrder.map((key, index) => (
+              (instrument[key] && (
+                <tr className='container-pair' key={index}>
+                  <td className='left-container'>
+                    {key === 'user_name' ? 'USER NAME' : key === 'description' ? 'TYPE' : key === 'number' ? 'CASE NUMBER' : key.toUpperCase()}:    
+                  </td>
+                  <td className='right-container' style={{ marginLeft: '10px' }}>
+                    {instrument[key]}
+                  </td>
+                </tr>
+              ))
+            ))}
+          </tbody>
+        </table>
+    )}
 
-{user && (
-  <table>
-    <tbody>
-      {userKeysOrder.map((key, index) => (
-        (user[key] && (
-          <tr className='container-pair' key={index}>
-            <td className='left-container'>
-              { key === 'full_name' ? 'NAME' : key === 'grade_level' ? 'GRADE' : key.toUpperCase()}:    
-            </td>
-            <td className='right-container' style={{ marginLeft: '10px' }}>
-            {key === 'active' ? (user[key] ? 'TRUE' : 'FALSE') : user[key]}
-            </td>
-          </tr>
-        ))
-      ))}
-    </tbody>
-  </table>
-)}
+    {user && (
+      <table>
+        <tbody>
+          {userKeysOrder.map((key, index) => (
+            (user[key] && (
+              <tr className='container-pair' key={index}>
+                <td className='left-container'>
+                  { key === 'full_name' ? 'NAME' : key === 'grade_level' ? 'GRADE' : key.toUpperCase()}:
+                </td>
+                <td className='right-container' style={{ marginLeft: '10px' }}>
+                  {key === 'active' ? (user[key] ? 'TRUE' : 'FALSE') : user[key]}
+                </td>
+              </tr>
+            ))
+          ))}
+          {classes && classes.length > 0 && (
+            <tr className='container-pair'>
+              <td className='left-container'>CLASSES:</td>
+              <td className='right-container' style={{ marginLeft: '10px' }}>
+                <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
+                  {classes.map((classItem, i) => (
+                    <li key={i}>{classItem}</li>
+                  ))}
+                </ul>
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    )}
+
 
 <div className='centered-text'>
         <h2>History</h2>
