@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ClassesAddStudents from './ClassesAddStudents';
 import ClassesAddInstruments from './ClassesAddInstruments';
+import PopupMessage from './PopupMessage';
+import LoadingSpinner from '../util/LoadingSpinner';
 
 const Classes = ({ baseUrl }) => {
   const [existingClasses, setExistingClasses] = useState([]);
@@ -17,6 +19,7 @@ const Classes = ({ baseUrl }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [createError, setCreateError] = useState(null);
+  const [infoMessage, setInfoMessage] = useState(null);
 
   
   // Fetch classes and users from the backend
@@ -28,7 +31,7 @@ const Classes = ({ baseUrl }) => {
       try {
         const response = await fetch(`${baseUrl}/classes`);
         if (!response.ok) {
-          throw new Error('Failed to fetch classes');
+          setInfoMessage('Failed to fetch classes');
         }
         const data = await response.json();
         setExistingClasses(data);
@@ -46,7 +49,7 @@ const Classes = ({ baseUrl }) => {
       try {
         const response = await fetch(`${baseUrl}/users`);
         if (!response.ok) {
-          throw new Error('Failed to fetch users');
+          setInfoMessage('Failed to fetch users');
         }
         const data = await response.json();
         setAllUsers(data);
@@ -80,7 +83,7 @@ const Classes = ({ baseUrl }) => {
   
         if (!response.ok) {
           const errorText = await response.text(); 
-          throw new Error(`Failed to fetch students: ${errorText}`);
+          setInfoMessage(`Failed to fetch students: ${errorText}`);
         }
   
         const data = await response.json();
@@ -144,7 +147,7 @@ const Classes = ({ baseUrl }) => {
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error('Failed to create class');
+          setInfoMessage('Failed to create class');
         }
         return response.json();
       })
@@ -182,7 +185,7 @@ const Classes = ({ baseUrl }) => {
                 body: JSON.stringify(payload)
             });
             if (!response.ok) {
-                throw new Error('Failed to remove student from class');
+                setInfoMessage('Failed to remove student from class');
             } else {
                 setSelectedClassStudents((prevStudents) => prevStudents.filter((s) => s.user_id !== student.user_id));
             }
@@ -233,15 +236,23 @@ const Classes = ({ baseUrl }) => {
         setAddInstrumentsPopup(true);
         setShowAllComponents(false);
     };
+    const closeInfoPopup = () => {
+        setInfoMessage(null);
+        setError(null);
+    };
 
 
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <LoadingSpinner />;
+  }
+
+  if (infoMessage) {
+    return <PopupMessage onClose={closeInfoPopup} message={infoMessage} />;
   }
 
   if (error) {
-    return <p>Error: {error}</p>;
+    return <PopupMessage onClose={closeInfoPopup} message={`Error: ${error}`} />;
   }
 
   return (

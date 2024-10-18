@@ -3,6 +3,7 @@ import { getAvailableNumbers, getEquipment, getLocations, getInstrumentStates } 
 import PopupMessage from './PopupMessage';
 import { CreateCheckout as CreateNewInstrument } from '../util/Permissions';
 import Unauthorized from './Unauthorized';
+import LoadingSpinner from '../util/LoadingSpinner';
 import '../index.css';
 
 const fetchData = async (baseUrl, data) => {
@@ -41,7 +42,7 @@ const NewInstrument = ({ baseUrl, profile }) => {
   const [showNumberSelection, setShowNumberSelection] = useState(false);
   const [lockInputFields, setLockInputFields] = useState(false);
   const [selectedNumber, setSelectedNumber] = useState('');
-  
+  const [loading, setLoading] = useState(false);
   const [popupMessage, setPopupMessage] = useState(null); 
   const [instrumentState, setInstrumentState] = useState('New');
   const canCreateInstrument = CreateNewInstrument(profile);
@@ -49,7 +50,9 @@ const NewInstrument = ({ baseUrl, profile }) => {
 
   useEffect(() => {
     const fetchInitialData = async () => {
+      setLoading(true);
       try {
+        setLoading(true);
         const equipment = await getEquipment(baseUrl);
         const locations = await getLocations(baseUrl);
         const instrumentConditions = await getInstrumentStates(baseUrl);
@@ -60,12 +63,14 @@ const NewInstrument = ({ baseUrl, profile }) => {
         console.error('Error fetching initial data:', error);
         setPopupMessage('Failed to fetch initial data: ', error); 
       }
+      setLoading(false);
     };
 
     fetchInitialData(); 
   }, [baseUrl]);
 
   const fetchAvailableNumbers = async () => {
+    setLoading(true);
     try {
       const numbers = await getAvailableNumbers(baseUrl,description);
       setAvailableNumbers(numbers);
@@ -73,11 +78,13 @@ const NewInstrument = ({ baseUrl, profile }) => {
     } catch (error) {
       setPopupMessage('Failed to fetch available numbers');
     }
+    setLoading(false);
   };
 
 
 
   const handleFetchData = async () => {
+    setLoading(true);
     try {
       const data = await fetchData(baseUrl, { 
         description, 
@@ -98,6 +105,7 @@ const NewInstrument = ({ baseUrl, profile }) => {
     } catch (error) {
       setPopupMessage('Failed to fetch data', error); // Set error message
     }
+    setLoading(true);
   };
 
   const handleClearFields = async () => {
@@ -119,6 +127,9 @@ const NewInstrument = ({ baseUrl, profile }) => {
     setSerial('');
     setLockInputFields(false);
 
+  };
+  if (loading) {
+    return <LoadingSpinner />;
   };
   
 

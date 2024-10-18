@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ViewLogs } from '../util/Permissions'; 
 import Unauthorized from './Unauthorized';
-// import '../util/Util.css';
 import '../index.css';
 
 const formatDate = (timestamp) => {
@@ -62,19 +61,10 @@ const History = ({ baseUrl, profile }) => {
     const data = await fetchData(baseUrl, userName, description, number);
     if (data) {
       setFetchedData(data);
+    } else {
+      
     }
   };
-
-  // const handleFetchData = async () => {
-  //   fetchDataAndUpdate();
-  // };
-
-  // const handleClearFields = async () => {
-  //   setUserName('');
-  //   setDescription('');
-  //   setNumber('');
-  //   fetchDataAndUpdate();
-  // };
 
   return (
     <div >
@@ -126,8 +116,6 @@ const History = ({ baseUrl, profile }) => {
       </div>
       <div className="container">
       {(description || number || userName) &&(  <div className='centered-text'>
-      {/* <button type="button" onClick={handleFetchData}>Search</button> */}
-      {/* <button type="button" onClick={handleClearFields}>Clear</button> */}
       </div>)}
       </div>
       

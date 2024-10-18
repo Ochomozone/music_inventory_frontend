@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom'; // Assuming you're using React Router
+import { useLocation } from 'react-router-dom'; 
 
 function Dashboard() {
   const location = useLocation();

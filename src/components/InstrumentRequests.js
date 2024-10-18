@@ -74,13 +74,12 @@ const InstrumentRequests = ({ profile, baseUrl }) => {
 
     const cancelRequest = async (uniqueId) => {
       const url = `${baseUrl}/requests?uniqueId=${uniqueId}`;
-      console.log('delete url:', url)
       try {
         const response = await fetch(url, {
           method: 'DELETE',
         });
         if (!response.ok) {
-          throw new Error('Failed to cancel request');
+          setMessage('Failed to cancel request');
         }
         const data = await response.json();
         setMessage(data.message);

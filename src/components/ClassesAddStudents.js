@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import UserSearchSimple from '../util/UserSearchSimple';
+import PopupMessage from './PopupMessage';
+import LoadingSpinner from '../util/LoadingSpinner';
 
 const ClassesAddStudents = ({ baseUrl, selectedClass, selectedClassStudents, changeClassStudents, closeAddStudentsPopup, updateClassStudents }) => {
     const [eligibleUsers, setEligibleUsers] = useState([]);
     const [classStudents, setClassStudents] = useState(selectedClassStudents);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [infoMessage, setInfoMessage] = useState(null);
     
     const getStudents = async (selectedClass) => {
           if (!selectedClass || !selectedClass.id) {
-            console.error('Invalid class value:', selectedClass?.class_name);
+            setInfoMessage('Invalid class value:', selectedClass?.class_name);
             return;
           }
           setLoading(true);
@@ -24,7 +27,7 @@ const ClassesAddStudents = ({ baseUrl, selectedClass, selectedClassStudents, cha
       
             if (!response.ok) {
               const errorText = await response.text(); 
-              throw new Error(`Failed to fetch students: ${errorText}`);
+              setInfoMessage(`Failed to fetch students: ${errorText}`);
             }
       
             const data = await response.json();
@@ -51,7 +54,7 @@ const ClassesAddStudents = ({ baseUrl, selectedClass, selectedClassStudents, cha
                 body: JSON.stringify(payload)
             });
             if (!response.ok) {
-                throw new Error('Failed to add student to class');
+                setInfoMessage('Failed to add student to class');
             } else {
                 getStudents(selectedClass);
                 const newEligibleUsers = eligibleUsers.filter((user) => user.id !== student.id);
@@ -60,7 +63,7 @@ const ClassesAddStudents = ({ baseUrl, selectedClass, selectedClassStudents, cha
             }
         }
         catch (err) {
-            console.error(err);
+            setInfoMessage(`Error: ${err.message}`);
         }
     };
     // function to handle adding a student to a class
@@ -83,11 +86,14 @@ const ClassesAddStudents = ({ baseUrl, selectedClass, selectedClassStudents, cha
     }
 
     if (loading) {
-        return <p>Loading...</p>;
+        return <LoadingSpinner />;
       }
     
       if (error) {
-        return <p>Error: {error}</p>;
+        return <PopupMessage message={error.message} />;
+      }
+      if (infoMessage) {
+        return <PopupMessage message={infoMessage} />;
       }
 
     return (

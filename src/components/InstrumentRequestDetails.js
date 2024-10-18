@@ -3,6 +3,8 @@ import '../index.css';
 import Unauthorized from './Unauthorized';
 import { useLocation } from 'react-router-dom';
 import TableComponent from '../util/InstrumentDetailsRequestTable';
+import PopupMessage from './PopupMessage';
+import LoadingSpinner from '../util/LoadingSpinner';
 
 const formatDate = (timestamp) => {
     const date = new Date(timestamp);
@@ -40,6 +42,8 @@ const formatDate = (timestamp) => {
 
   const RequestDetails = ({ profile, baseUrl }) => {
     const [fetchedData, setFetchedData] = useState(null);
+    const [infoMessage, setInfoMessage] = useState('');
+    const [loading, setLoading] = useState(false);
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const uniqueId = searchParams.get('uniqueId') || '';
@@ -50,18 +54,33 @@ const formatDate = (timestamp) => {
     const attendedBy = profile ? profile.name : '';
 
     useEffect(() => {
+        setLoading(true);
         const fetchDataFromBackend = async () => {
             const data = await fetchData(baseUrl, uniqueId);
             if (data) {
                 setFetchedData(data);
+            } else {
+                setInfoMessage('Failed to fetch data');
             }
         };
         fetchDataFromBackend();
+        setLoading(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [baseUrl, uniqueId]);
+
+    const clearInfoMessage = () => {
+      setInfoMessage('')
+    }
     if (!profile) {
         return <Unauthorized profile/>;
       }
+      if (loading) {
+        return <LoadingSpinner/>;
+      }
+      if (infoMessage) {
+        return <PopupMessage message={infoMessage} clearMessage={clearInfoMessage} />;
+      }
+
 
       return (
         <div className='container'>

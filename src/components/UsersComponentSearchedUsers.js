@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-function DisplaySearchedUsers ({users, userClasses, clearPopup}) {
-    clearPopup();
+function DisplaySearchedUsers ({users, userClasses}) {
     const navigate = useNavigate();
     const [searchedUsers, setSearchedUsers] = useState(users);
     useEffect(() => {

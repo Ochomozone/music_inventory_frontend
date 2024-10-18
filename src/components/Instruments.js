@@ -8,6 +8,8 @@ import '../index.css';
 import { NavLink } from 'react-router-dom';
 import SwapCasePopup from './SwapCasePopup'; 
 import PopupMessage from './PopupMessage';
+import LoadingSpinner from '../util/LoadingSpinner';
+
 
 function Instruments({ baseUrl, profile }) {
   const [instruments, setInstruments] = useState([]);
@@ -17,6 +19,7 @@ function Instruments({ baseUrl, profile }) {
   const [selectedInstrument, setSelectedInstrument] = useState(null);
   const [swapMessage, setSwapMessage] = useState('');
   const [showPopupResponse, setShowPopupResponse] = useState(false);
+  const [infoMessage, setInfoMessage] = useState('');
   const canViewInstruments = ViewInstruments(profile);
   const canCreateNewInstrument = CreateNewInstrument(profile);
   const navigate = useNavigate();
@@ -27,6 +30,7 @@ function Instruments({ baseUrl, profile }) {
   }, []);
 
   const fetchInstruments = async () => {
+    setLoading(true);
     try {
       const response = await fetch(`${baseUrl}/instruments`); 
       if (!response.ok) {
@@ -59,7 +63,7 @@ function Instruments({ baseUrl, profile }) {
     try {
       const response = await fetch(`${baseUrl}/instruments?description=${description}&number=${number2}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch instrument');
+        setInfoMessage('Failed to fetch instrument');
       }
       const data = await response.json();
       return data[0].id;
@@ -77,7 +81,6 @@ function Instruments({ baseUrl, profile }) {
         setSwapMessage('Invalid number for swapping');
         setShowPopupResponse(true);
         return;
-        // throw new Error('That case number does not exist. Please try again.');
         
       }
 
@@ -88,9 +91,6 @@ function Instruments({ baseUrl, profile }) {
       });
       if (!response.ok) {
         setSwapMessage('An error occured on our server. Cases not swapped');
-        setShowPopupResponse(true);
-
-        // throw new Error('An error occured on our server. Cases not swapped');
       }
       await fetchInstruments();
     } catch (error) {
@@ -108,13 +108,20 @@ function Instruments({ baseUrl, profile }) {
     setShowSwapPopup(false);
     setSelectedInstrument(null);
   };
+  const closeInfoPopup = () => {
+    setInfoMessage('');
+    setError(null);
+  };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <LoadingSpinner/>;
   }
 
   if (error) {
-    return <p>Error: {error}</p>;
+    return <PopupMessage message={error} onClose={closeInfoPopup} />;
+  }
+  if (infoMessage) {  
+    return <PopupMessage message={infoMessage} onClose={closeInfoPopup} />;
   }
 
   return (

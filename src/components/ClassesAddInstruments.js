@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
+import PopupMessage from './PopupMessage';
+import LoadingSpinner from '../util/LoadingSpinner';
 const ClassesAddInstruments = ({ baseUrl, selectedClass, student, closeAddInstrumentsPopup, selectedClassStudents, updateClassStudents }) => {
     const [newInstrument, setNewInstrument] = useState('');
+    const [infoMessage, setInfoMessage] = useState('');
+    const [loading, setLoading] = useState(false);
     const addInstrumentToClass = async (baseUrl, instrument) => {
         const payload = {
             classId: selectedClass.id,
@@ -8,6 +12,7 @@ const ClassesAddInstruments = ({ baseUrl, selectedClass, student, closeAddInstru
             instrument
         };
         try {
+            setLoading(true);
             const response = await fetch(`${baseUrl}/classes/instruments`, {
                 method: 'PATCH',
                 headers: {
@@ -16,7 +21,7 @@ const ClassesAddInstruments = ({ baseUrl, selectedClass, student, closeAddInstru
                 body: JSON.stringify(payload)
             });
             if (!response.ok) {
-                throw new Error('Failed to add instrument to class');
+                setInfoMessage('Failed to add instrument to class');
             } else {
                 const newStudent = student
                 newStudent.primary_instrument = instrument.toUpperCase();
@@ -29,10 +34,11 @@ const ClassesAddInstruments = ({ baseUrl, selectedClass, student, closeAddInstru
                 });
                 updateClassStudents(updatedStudents);
                 setNewInstrument('');
+                setLoading(false);
             }
         }
         catch (err) {
-            console.error(err);
+            setInfoMessage(`Error: ${err.message}`);
         }
     }
     const handleAddInstrument = (instrument) => {
@@ -41,7 +47,14 @@ const ClassesAddInstruments = ({ baseUrl, selectedClass, student, closeAddInstru
     };
     const handleClose = () => {
         closeAddInstrumentsPopup();
-    }
+    };
+    if (loading) {
+        return <LoadingSpinner />;
+    };
+    if (infoMessage) {
+        return <PopupMessage message={infoMessage} closePopup={() => setInfoMessage('')} />;
+    };
+
     return (
         <div className='popup'>
             <div className='popup_inner'>

@@ -7,7 +7,6 @@ function UploadStudentFile({ baseUrl, onDataFetched, onRecordsUpdate, profile })
   const [existingUsers, setExistingUsers] = useState([]); // State for existing users
   const [newUsers, setNewUsers] = useState([]); // State for new unmatched users
   const [updatedUsers, setUpdatedUsers] = useState([]); // State for updated users
-
   const canViewUsers = ViewUsers(profile);
 
   // Fetch the existing users when the component mounts
@@ -67,18 +66,20 @@ function UploadStudentFile({ baseUrl, onDataFetched, onRecordsUpdate, profile })
           const existingEmail = existingUser.email ? existingUser.email.toLowerCase() : '';
           const existingFirstName = existingUser.first_name ? existingUser.first_name.toLowerCase() : '';
           const existingLastName = existingUser.last_name ? existingUser.last_name.toLowerCase() : '';
-
+          const existingGradeLevel = existingUser.grade_level ? existingUser.grade_level : '';
           const isEmailChanged = existingEmail !== record.email.toLowerCase();
           const isFirstNameChanged = existingFirstName !== record.firstName.toLowerCase();
           const isLastNameChanged = existingLastName !== record.lastName.toLowerCase();
+          const isGradeLevelChanged = existingGradeLevel !== record.grade_level;
+          
 
-          return isEmailChanged || isFirstNameChanged || isLastNameChanged;
+          return isEmailChanged || isFirstNameChanged || isLastNameChanged || isGradeLevelChanged;
         }
         return false;
       });
 
       setUpdatedUsers(updatedRecords);
-      onRecordsUpdate({ newUsers, updatedUsers }); // Send back updated users and new users to parent
+      onRecordsUpdate({ newUsers, updatedUsers }); 
     };
 
     if (records.length > 0) {
@@ -104,7 +105,7 @@ function UploadStudentFile({ baseUrl, onDataFetched, onRecordsUpdate, profile })
 
             const formattedData = jsonData
               .map(record => {
-                const email = record.FIELD4 ? record.FIELD4.toLowerCase() : "";
+                const email = record.email ? record.email.toLowerCase() : "";
                 if (!email) {
                   return null; // Skip the record if email is missing or blank
                 }
@@ -118,11 +119,12 @@ function UploadStudentFile({ baseUrl, onDataFetched, onRecordsUpdate, profile })
                   : new Date().getFullYear() + 1;
 
                 return {
-                  number: String(record.FIELD1),
-                  lastName: toTitleCase(record.FIELD2),
-                  firstName: toTitleCase(record.FIELD3),
+                  number: String(record.number),
+                  lastName: toTitleCase(record.lastname),
+                  firstName: toTitleCase(record.firstname),
                   email: email,
-                  grade_level: isNaN(finishYear) ? null : 12 - (finishYear - currentYear),
+                  grade_level: !record.gradelevel ? (isNaN(finishYear) ? null : 12 - (finishYear - currentYear)) : record.gradelevel,
+
                 };
               })
               .filter(record => record !== null); // Filter out null records (where email is missing)

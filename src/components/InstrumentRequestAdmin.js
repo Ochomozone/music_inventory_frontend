@@ -5,6 +5,8 @@ import Unauthorized from './Unauthorized';
 import AllInstrumentRequestTable from '../util/AllInstrumentRequestDetailsTable';
 import { getAvailableInstruments } from '../util/helpers';
 import {RequestPopup} from './RequestsPopup';
+import PopupMessage from './PopupMessage';
+import LoadingSpinner from '../util/LoadingSpinner';
 
   const fetchData = async (baseUrl) => {
     
@@ -41,12 +43,17 @@ import {RequestPopup} from './RequestsPopup';
     const [totalQuantity, setTotalQuantity] = useState(0);
     const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
     const [selectedInstrumentChoices, setSelectedInstrumentChoices] = useState([{}]);
+    const [infoMessage, setInfoMessage] = useState('');
+    const [loading, setLoading] = useState(false);
     
     useEffect(() => {
         const fetchData = async () => {
-          if (!responseData.instrumentData) return; 
+          if (!responseData.instrumentData){
+            setInfoMessage('Data fetch failed!')
+        return; }
       
           try {
+            setLoading(true);
             const availableNumbersPromises = responseData.instrumentData.map(async item => {
               const instrumentOptions = await getAvailableInstruments(baseUrl, item.instrument);
               return { [item.instrument]: instrumentOptions };
@@ -65,8 +72,11 @@ import {RequestPopup} from './RequestsPopup';
             setInstrumentOptions(mergedData);
             const totalQuantity = responseData.instrumentData.reduce((acc, curr) => acc + curr.quantity, 0);
             setTotalQuantity(totalQuantity);
+            setLoading(false);
           } catch (error) {
             console.error('Error fetching available numbers:', error);
+            setLoading(false);
+            setInfoMessage('Error fetching available numbers:')
           }
         };
       
@@ -81,12 +91,7 @@ import {RequestPopup} from './RequestsPopup';
         setResponseData(responseData);
         };
 
-    useEffect(() => {
-        const printState = async () => {
-        };
-        printState();
-    }, [selectedCreatorId, instrumentsGranted, selectedId, selectedStatus, selectedSuccess, selectedUniqueId, selectedNotes, attendedBy, attendedById, selectedCreatorName, selectedCreatorId, instrumentsGranted]);
-
+    
     const initializeInstrumentChoices = (data) => {
         return data.reduce((acc, item) => {
             acc[item.requestId] = {
@@ -131,7 +136,7 @@ import {RequestPopup} from './RequestsPopup';
             }
         }
         catch (error) {
-            console.error('Error rejecting request:', error);
+            setInfoMessage('Error rejecting request:');
         }
         
     };
@@ -204,7 +209,7 @@ import {RequestPopup} from './RequestsPopup';
             });
             if (!response.ok) {
                 console.log('error:', response);
-                throw new Error('Failed to send request');
+                setInfoMessage('Error: Failed to send request');
             }
            
         }
@@ -226,6 +231,9 @@ import {RequestPopup} from './RequestsPopup';
         setShowConfirmationPopup(false);
         
     };
+    const clearInfoMessage = () => {
+        setInfoMessage('');
+    };
 
 
     useEffect(() => {
@@ -243,6 +251,12 @@ import {RequestPopup} from './RequestsPopup';
     if (!profile) {
         return <Unauthorized profile/>;
       }
+      if (loading) {
+        return <LoadingSpinner />;
+      };
+        if (infoMessage) {
+            return <PopupMessage message={infoMessage} clearMessage={clearInfoMessage} />;
+        };
 
       return (
         <div className='container'>

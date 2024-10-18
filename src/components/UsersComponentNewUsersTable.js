@@ -1,10 +1,10 @@
 import React from "react";
-function NewUsersTable({ newUsers, handleCreateUsers, clearPopup }) {
-    clearPopup();
+function NewUsersTable({ newUsers, handleCreateUsers, processStaff, onCancel}) {
     return (
         <div className="table-container">
-              <h2>Enter ({newUsers.length }) New Students</h2>
-              <button onClick={handleCreateUsers}>Enter New Students</button>
+             <div>  {processStaff ? <h2>Enter ({newUsers.length }) New Staff </h2> : <h2>Enter ({newUsers.length }) New Students </h2> } </div>
+              <button onClick={handleCreateUsers}>Save</button>
+              <button onClick={onCancel}>Clear Uploaded Data</button>
               <table className="table">
                 <thead>
                   <tr>

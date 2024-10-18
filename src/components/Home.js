@@ -3,9 +3,10 @@ import InstrumentFetcher from '../util/VanillaInstrumentSearch';
 import LostAndFoundSearch from '../util/lostAndFoundSearch';
 import { useNavigate } from 'react-router-dom';
 import { RequestInstruments } from '../util/Permissions';
+import PopupMessage from './PopupMessage';
 import '../index.css';
 
-const Home = ({ profile, login, baseUrl }) => {
+const Home = ({ profile, login, baseUrl, popupMessage }) => {
   const [dispatches, setDispatches] = useState([]);
   const [error, setError] = useState(null);
   const userId = profile && profile.databaseId;
@@ -52,6 +53,17 @@ const Home = ({ profile, login, baseUrl }) => {
   const handleCloseError = () => {
     setError(null); // Clear the error state when closing the popup
   };
+  const handlePopupClose = () => {
+    if (popupMessage) {
+      popupMessage = null;
+    }
+    return (
+      <Home/>
+    )
+  } 
+  if (popupMessage) {
+    return <PopupMessage message={popupMessage} onClose={handlePopupClose}/>;
+  }
 
   return (
     <div className='page'>

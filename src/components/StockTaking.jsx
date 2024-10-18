@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import InstrumentFetcher from '../util/InstrumentSearch';
 import { ViewInstruments } from '../util/Permissions';
 import Unauthorized from './Unauthorized';
@@ -18,13 +18,7 @@ function TakeStock({ baseUrl, profile }) {
   const canViewInstruments = ViewInstruments(profile);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchInstruments();
-    fetchLocations();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showSearchResults, location]);
-
-  const fetchLocations = async () => {
+  const fetchLocations = useCallback(async () => {
     try {
       const result = await getLocations(baseUrl);
       if (!result) {
@@ -35,9 +29,9 @@ function TakeStock({ baseUrl, profile }) {
       setError(error.message);
       setLoading(false);
     }
-  };
+  }, [baseUrl]);
 
-  const fetchInstruments = async () => {
+  const fetchInstruments = useCallback(async () => {
     try {
       const response = await fetch(`${baseUrl}/instruments`);
       if (!response.ok) {
@@ -50,23 +44,28 @@ function TakeStock({ baseUrl, profile }) {
       setError(error.message);
       setLoading(false);
     }
-  };
+  }, [baseUrl]);
+
+  useEffect(() => {
+    fetchInstruments();
+    fetchLocations();
+  }, [showSearchResults, fetchInstruments, fetchLocations]);
 
   const handleLocationChange = (e) => {
     setLocation(e.target.value);
   };
-
-  useEffect(() => {
-    filterInstruments();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location]);
-
-  const filterInstruments = () => {
+  const filterInstruments = useCallback(() => {
     const filteredInstruments = allInstruments.filter(
       (instrument) => instrument.location === location
     );
     setLocationInstruments(filteredInstruments);
-  };
+  }, [allInstruments, location]);
+
+  useEffect(() => {
+    filterInstruments();
+  }, [location, filterInstruments]);
+
+ 
 
   const handleDataFetched = (data) => {
     setSearchInstruments(data);

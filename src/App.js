@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import PopupMessage from './components/PopupMessage';
@@ -27,7 +27,9 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);  
   const [isAuthenticating, setIsAuthenticating] = useState(false); 
   const [errorMessage,  setErrorMessage] = useState(null);
+  const [timeoutPopup, setTimeoutPopup] = useState(false);
   const navigate = useNavigate();
+  const inactivityTimeoutRef = useRef(null); // Using useRef for timeout
 
   // Google login hook
   const login = useGoogleLogin({
@@ -65,7 +67,6 @@ function App() {
         } else {
           setErrorMessage('Failed to authenticate');
           throw new Error('Failed to authenticate with the backend');
-          
         }
       })
       .then(userProfile => {
@@ -86,21 +87,54 @@ function App() {
   const handleLogout = () => {
     googleLogout();
     setProfile(null);
-    navigate('/');
     sessionStorage.removeItem('profile');
+    
   };
-  const closePopupMessage = () => {
-    setErrorMessage(null)
-  }
+
+  // Inactivity timeout logic
+  useEffect(() => {
+    if (profile) {
+      const resetTimeout = () => {
+        if (inactivityTimeoutRef.current) {
+          clearTimeout(inactivityTimeoutRef.current);
+        }
+
+        inactivityTimeoutRef.current = setTimeout(() => {
+          setTimeoutPopup(true); 
+        }, 30 * 60 * 1000); 
+      };
+
+      window.addEventListener('mousemove', resetTimeout);
+      window.addEventListener('keydown', resetTimeout);
+
+      resetTimeout();
+
+      return () => {
+        if (inactivityTimeoutRef.current) {
+          clearTimeout(inactivityTimeoutRef.current);
+        }
+        window.removeEventListener('mousemove', resetTimeout);
+        window.removeEventListener('keydown', resetTimeout);
+      };
+    }
+  }, [profile]);
+
+  const closeTimeoutPopup = () => {
+    setTimeoutPopup(false);
+    handleLogout();
+    login();
+  };
   if (errorMessage) {
     return (
-      <PopupMessage onClose={closePopupMessage} message={errorMessage}/>
+      <PopupMessage onClose={closeTimeoutPopup} message={errorMessage}/>
     )
   }
- 
+  if (timeoutPopup) {
+    return (
+      <PopupMessage onClose={closeTimeoutPopup} message="You have been inactive for too long. You have been logged out." />
+    )
+  };
 
-
-  // If the app is checking for stored profile or authenticating, show the loading spinner
   if (isLoading || isAuthenticating) {
     return <LoadingSpinner />;
   }

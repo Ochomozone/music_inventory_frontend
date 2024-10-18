@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import LoadingSpinner from '../util/LoadingSpinner';
 import './NewCheckout.css';
 import PopupMessage from './PopupMessage';
+import { CreateCheckout } from '../util/Permissions';
+import Unauthorized from './Unauthorized';
 const fetchCheckoutData = async (baseUrl, description = '', number = '', userId = '', profileId = '', username = '', fullname = '') => {
     const url = `${baseUrl}/checkouts`;
     const body = JSON.stringify({ description, number, userId, profileId, username,fullname});
@@ -104,16 +107,25 @@ const NewCheckout = ({ baseUrl, profile }) => {
     const [selectedInstrumentRow, setSelectedInstrumentRow] = useState(null);
     const [checkoutMessage, setCheckoutMessage] = useState('');
     const [showPopup, setShowPopup] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [infoMessage, setInfoMessage] = useState('');
     const instrumentLocation = profile.room;
-
+    const canCheckout = CreateCheckout(profile);
   
     const handleUserSearch = async () => {
+      setLoading(true);
       try {
         const fetchedUserData = await fetchUserData(baseUrl, userName, userDivision, classValue);
-        setUserData(fetchedUserData); 
+        const fetchedUsers = fetchedUserData.filter(item=> item.full_name)
+        if (fetchedUsers.length === 0) {
+          setInfoMessage('No matching users found');
+          handleClearUserFields();}
+          else {
+        setUserData(fetchedUserData); }
       } catch (error) {
         setError(error.message);
       }
+      setLoading(false);
     };
   
     const handleSelectUser = (userId, userName, index) => {
@@ -131,12 +143,20 @@ const NewCheckout = ({ baseUrl, profile }) => {
       };
 
     const handleInstrumentSearch = async () => {
+      setLoading(true);
         try {
+          let availableInstruments = [];
           const fetchedInstrumentData = await fetchInstrumentData(baseUrl, instrumentLocation, description, number);
-          setInstrumentData(fetchedInstrumentData.filter(item=> item.location === instrumentLocation)); 
+          availableInstruments = fetchedInstrumentData.filter(item=> item.location === instrumentLocation)
+          if (availableInstruments.length === 0) {
+            setInfoMessage('No matching instruments available at this location');
+            handleClearInstrumentFields();}
+            else {
+          setInstrumentData(fetchedInstrumentData.filter(item=> item.location === instrumentLocation)); }
         } catch (error) {
           setError(error.message);
         }
+        setLoading(false);
       };
 
       const handleSelectInstrument = (instrumentDescription, instrumentNumber, index) => {
@@ -154,12 +174,16 @@ const NewCheckout = ({ baseUrl, profile }) => {
         setSelectedInstrumentRow(null);
       };
 
+      const handleClearMessagePopup = () => {
+        setInfoMessage('');
+      };
+
       const handleSubmitCheckout = async () => {
         const confirmation = window.confirm(`Are you sure you want to assign this user ${selectedInstrumentDescription} number ${selectedInstrumentNumber} to ${selectedUserName}?`);
         if (confirmation) {
         try {
           if (!selectedInstrumentNumber || !selectedUserId || !selectedInstrumentDescription) {
-            throw new Error('Please select both a user and an instrument');
+            setInfoMessage('Error::Please select both a user and an instrument');
           }
           const checkoutData = await fetchCheckoutData(
             baseUrl,
@@ -171,7 +195,7 @@ const NewCheckout = ({ baseUrl, profile }) => {
             selectedUserName
           );
           if (!checkoutData) {
-            throw new Error('Failed to submit checkout');
+            setInfoMessage('Error: Failed to submit checkout');
           }
           setCheckoutMessage(checkoutData.message);
           setShowPopup(true); 
@@ -188,11 +212,20 @@ const NewCheckout = ({ baseUrl, profile }) => {
           setSelectedRow(null);
           setSelectedInstrumentRow(null);
         } catch (error) {
-          console.error('Error submitting checkout:', error.message);
             setError(error.message);
         }
       }
       };
+    if (!canCheckout) {
+      return <Unauthorized profile />;
+    };
+    if (loading) {
+      return <LoadingSpinner />;
+    }
+    if (infoMessage) {
+      return <PopupMessage message={infoMessage} onClose={handleClearMessagePopup} />;
+    }
+    
       
   
     return (
@@ -333,7 +366,7 @@ const NewCheckout = ({ baseUrl, profile }) => {
           message={checkoutMessage} 
           onClose={() => setShowPopup(false)} />}
         {error&& <p>Error: {error}</p>}
-      </div>
+      </div>    
       
       
     );

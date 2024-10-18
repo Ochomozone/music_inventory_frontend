@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CheckoutSearch from '../util/CheckoutSearch';
+import PopupMessage from './PopupMessage';
+import LoadingSpinner from '../util/LoadingSpinner';
 import { NavLink } from 'react-router-dom';
 import '../index.css';
 import { ViewCheckouts, CreateCheckout ,TurnInCheckout} from '../util/Permissions';
@@ -8,7 +10,7 @@ import Unauthorized from './Unauthorized';
 function Checkouts({baseUrl, profile}) {
   const [dispatches, setDispatches] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [infoMessage, setInfoMessage] = useState(null);
   const canCreateCheckout = CreateCheckout(profile);
   const canViewCheckouts = ViewCheckouts(profile);
   const canTurnInCheckout = TurnInCheckout(profile);
@@ -33,13 +35,13 @@ function Checkouts({baseUrl, profile}) {
     try {
       const response = await fetch(`${baseUrl}/checkouts`);
       if (!response.ok) {
-        throw new Error('Failed to fetch dispatches');
+        setInfoMessage('Failed to fetch checkouts');
       }
       const data = await response.json();
       setDispatches(data);
       setLoading(false);
     } catch (error) {
-      setError(error.message);
+      setInfoMessage(`Error: ${error.message}`);
       setLoading(false);
     }
   };
@@ -50,7 +52,6 @@ function Checkouts({baseUrl, profile}) {
 
   const handleClearFields = async () => {
     setLoading(true);
-    setError(null);
     setDispatches([]);
     await fetchCheckouts();
   };
@@ -63,21 +64,24 @@ function Checkouts({baseUrl, profile}) {
           method: 'POST',
         });
         if (!response.ok) {
-          throw new Error('Failed to turn in instrument');
+          setInfoMessage('Failed to turn in instrument');
         }
-        // await fetchCheckouts();
       } catch (error) {
-        setError(error.message);
+        setInfoMessage(error.message);
       }
     }
   };
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  const closeInfoPopup = () => {
+    setInfoMessage(null);
+  };
 
-  if (error) {
-    return <p>Error: {error}</p>;
+  if (infoMessage) {
+    return <PopupMessage message={infoMessage} onClose={closeInfoPopup} />;
+  };
+
+  if (loading) {
+    return <LoadingSpinner />;
   }
 
   return (

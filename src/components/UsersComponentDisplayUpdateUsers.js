@@ -1,15 +1,17 @@
 import React from 'react';
-function UpdatedUsersTable ({updatedUsers, handleUpdateUsers, clearPopup}) {
-    clearPopup();
-    console.log('Updated users passed to table component:', updatedUsers);
+function UpdatedUsersTable ({updatedUsers, handleUpdateUsers, processStaff, onCancel}) {
     // const [users, setUsers] = useState(updatedUsers);
     // useEffect(() => {
     //     setUsers(updatedUsers);
     // }, [updatedUsers]);
+    const updateUsers = () => {
+      handleUpdateUsers();
+    };
     return (
         <div className="table-container">
-              <h2>Update ({updatedUsers.length}) Students</h2>
-              <button onClick={handleUpdateUsers}>Update Students</button>
+              {processStaff ? <h2>Update ({updatedUsers.length})Staff Member/s </h2> : <h2>Update ({updatedUsers.length}) Student/s</h2>}
+              <button onClick={updateUsers}>Save</button>
+              <button onClick={onCancel}>Clear Uploaded Data</button>
               <table className="table">
                 <thead>
                   <tr>
