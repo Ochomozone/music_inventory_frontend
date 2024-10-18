@@ -34,7 +34,7 @@ const fetchData = async (baseUrl, userName = '', userDivision = '', classValue =
   }
 };
 
-const UsersSearch = ({ baseUrl, onDataFetched }) => {
+const UsersSearch = ({ baseUrl, onDataFetched, noUsersFound }) => {
   const [userName, setUserName] = useState('');
   const [userDivision, setUserDivision] = useState('');
   const [classValue, setClassValue] = useState('');
@@ -54,7 +54,7 @@ const UsersSearch = ({ baseUrl, onDataFetched }) => {
     const data = await fetchData(baseUrl);
     if (data) {
       onDataFetched(data);
-    }
+    } 
   };
 
   return (

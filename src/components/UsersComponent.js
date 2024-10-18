@@ -43,6 +43,9 @@ function UsersComponent({ baseUrl, profile }) {
     if (searchedUsers.length > 0) {
       fetchUserClasses();
       setLoading(false);
+    }else {
+      setPopupMessage('No users found');
+      setLoading(false);
     }
   }, [searchedUsers, baseUrl]);
 
@@ -78,6 +81,11 @@ function UsersComponent({ baseUrl, profile }) {
   const handleDataFetched = (data) => {
     setSearchedUsers(data);
   };
+  const handleNoUsersFound = () => {
+    setLoading(false);
+    setPopupMessage('No users found');
+  };
+
 
   // Call findNewUsers when records are updated
   useEffect(() => {
@@ -437,7 +445,7 @@ const handleCreateUsers = async () => {
               </div>
             </div>
             <div className="right-container">
-            <UsersSearch baseUrl={`${baseUrl}`} onDataFetched={handleDataFetched} />
+            <UsersSearch baseUrl={`${baseUrl}`} onDataFetched={handleDataFetched} noUsersFound={handleNoUsersFound}/>
             </div>
           </div>}
           {searchedUsers.length > 0 && (
