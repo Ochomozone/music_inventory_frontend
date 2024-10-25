@@ -60,7 +60,8 @@ export const getAvailableNumbers = async (baseUrl, description) => {
         throw new Error('Failed to fetch locations');
       }
       const locationsData = await response.json();
-      return locationsData.map(item => item.room);
+      const sortedLocations = locationsData.sort((a, b) => a.room.localeCompare(b.room));
+      return sortedLocations.map(item => item.room);
     } catch (error) {
       console.error('Error fetching locations data:', error);
       throw error;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import EditStaffForm from '../util/EditStaffForm';
 import '../index.css';
 
 const formatDate = (timestamp) => {
@@ -46,19 +47,38 @@ const fetchData = async (baseUrl, userName = '', description = '', number = '', 
   }
 };
 
-const Detail = ({ baseUrl }) => {
+const Detail = ({ baseUrl}) => {
   const [fetchedData, setFetchedData] = useState(null);
+  const [showStaffForm, setShowStaffForm] = useState(null);
   const location = useLocation();
+  const [user, setUser] = useState(location.state.user || null);
   const searchParams = new URLSearchParams(location.search);
   const userName = searchParams.get('userName') || '';
   const databaseId = searchParams.get('databaseId') || '';
   const description = searchParams.get('description') || '';
   const number = searchParams.get('number') || '';
   const instrument = location.state.instrument;
-  const user = location.state.user;
   const classes = location.state.classes;
   const instrumentKeysOrder = ['family', 'description', 'make', 'model', 'serial', 'legacy_code', 'code', 'number', 'state', 'location', 'user_name', 'checkout_date', 'return_date'];
-  const userKeysOrder = ['full_name', 'role', 'email', 'division', 'grade_level', 'active'];
+  const userKeysOrder = ['edit details','full_name', 'role', 'email', 'division', 'grade_level', 'room', 'active'];
+
+  const staffList = ['STAFF', 'MUSIC TA', 'MUSIC TEACHER', 'INVENTORY MANAGER', 'FACULTY'];
+  const isStaff = (user) => {
+    return staffList.includes(user.role);
+  };
+
+  const updateStaff = (updatedUser) => {
+    setUser(updatedUser);
+    setShowStaffForm(false); 
+  };
+
+  // if (user && isStaff(user)) {
+  //   user = {
+  //     ...user, 
+  //     'edit details': <button onClick={() => setShowStaffForm(true)}>Edit Details</button>,
+  //   };
+  // }
+ 
   useEffect(() => {
     const fetchDataAndUpdate = async () => {
       const data = await fetchData(baseUrl, userName,  description, number, databaseId);
@@ -68,12 +88,27 @@ const Detail = ({ baseUrl }) => {
     };
 
     fetchDataAndUpdate();
-  }, [baseUrl, userName,  description, number, databaseId, location.state]);
+  }, [baseUrl, userName,  description, number, databaseId, location.state, user]);
+
+  const handleCloseStaffForm = () => {
+    setShowStaffForm(false);
+  }
 
   return (
     <div className='container'>
       <div className='centered-text'>
         <h2>Details</h2>
+        
+        {showStaffForm && (
+          <EditStaffForm
+            baseUrl={baseUrl}
+            staff={user}
+            onClose={handleCloseStaffForm}
+            showStaffForm={showStaffForm}
+            updateStaff={updateStaff}
+
+          />
+        )}
       </div>
       {instrument && (
         <table>
@@ -93,6 +128,9 @@ const Detail = ({ baseUrl }) => {
           </tbody>
         </table>
     )}
+    {isStaff(user) && (
+        <div className='centered-text'><button onClick={() => setShowStaffForm(true)}>Edit Details</button> </div>
+      )}
 
     {user && (
       <table>

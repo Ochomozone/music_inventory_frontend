@@ -44,7 +44,6 @@ function UsersComponent({ baseUrl, profile }) {
       fetchUserClasses();
       setLoading(false);
     }else {
-      setPopupMessage('No users found');
       setLoading(false);
     }
   }, [searchedUsers, baseUrl]);
@@ -88,64 +87,66 @@ function UsersComponent({ baseUrl, profile }) {
 
 
   // Call findNewUsers when records are updated
+  const findNewUsers = useCallback((uploadedRecords) => {
+    if (existingUsers.length === 0) {
+      console.warn('No existing users to compare with.');
+      return;
+    }
+
+    const existingUserNumbers = existingUsers.map(user => user.number); 
+    const existingUserEmails = existingUsers.map(user => user.email ? user.email.toLowerCase() : '');
+    const newRecords = uploadedRecords.filter(record => 
+      !existingUserNumbers.includes(record.number) && 
+      !existingUserEmails.includes(record.email.toLowerCase())
+    );
+    setNewUsers(newRecords); 
+  }, [existingUsers]);
+
+  const findUpdatedUsers = useCallback((uploadedRecords) => {
+    if (existingUsers.length === 0) {
+      console.warn('No existing users to compare with.');
+      return;
+    }
+
+    const updatedRecords = uploadedRecords.filter(record => {
+      const existingUser = existingUsers.find(user => user.number && user.number === record.number);
+      if (existingUser) {
+        const existingEmail = existingUser.email ? existingUser.email.toLowerCase() : '';
+        const existingFirstName = existingUser.first_name ? existingUser.first_name.toLowerCase() : '';
+        const existingLastName = existingUser.last_name ? existingUser.last_name.toLowerCase() : '';
+        const existingGradeLevel = existingUser.grade_level ? existingUser.grade_level : '';
+        const existingDivision = existingUser.division ? existingUser.division : '';
+        const existingRoom = existingUser.room ? existingUser.room : '';
+        
+        const isEmailChanged = existingEmail !== record.email.toLowerCase();
+        const isFirstNameChanged = existingFirstName !== record.firstName.toLowerCase();
+        const isLastNameChanged = existingLastName !== record.lastName.toLowerCase();
+        const isGradeLevelChanged = record.gradeLevel ? existingGradeLevel !== record.gradeLevel : false;
+        const isDivisionChanged = record.division ? existingDivision !== record.division : false;
+        const isRoomChanged = record.room ? existingRoom !== record.room : false;
+        
+        return isEmailChanged || isFirstNameChanged || isLastNameChanged || isGradeLevelChanged || isDivisionChanged || isRoomChanged;
+      }
+      return false;
+    });
+
+    setUpdatedUsers(updatedRecords); 
+  }, [existingUsers]);
+
   useEffect(() => {
     setLoading(true);
-    const findNewUsers = (uploadedRecords) => {
-      if (existingUsers.length === 0) {
-        console.warn('No existing users to compare with.');
-        return;
-      }
-  
-      const existingUserNumbers = existingUsers.map(user => user.number); 
-      const existingUserEmails = existingUsers.map(user => user.email? user.email.toLowerCase(): '');
-      const newRecords = uploadedRecords.filter(record =>( !existingUserNumbers.includes(record.number) && !existingUserEmails.includes(record.email.toLowerCase()))); 
-      setNewUsers(newRecords); 
-    };
-  
+
     if (records.length > 0) {
       findNewUsers(records);
-    }
-    setLoading(false);
-  }, [records, existingUsers]);
-
-  //useEffect to find all existing classes
-
-  useEffect(() => {
-    setLoading(true);
-    const findUpdatedUsers = (uploadedRecords) => {
-      if (existingUsers.length === 0) {
-        console.warn('No existing users to compare with.');
-        return;
-      }
-  
-      const updatedRecords = uploadedRecords.filter(record => {
-        const existingUser = existingUsers.find(user => user.number && user.number === record.number);
-        if (existingUser) {
-          const existingEmail = existingUser.email ? existingUser.email.toLowerCase() : '';
-          const existingFirstName = existingUser.first_name ? existingUser.first_name.toLowerCase() : '';
-          const existingLastName = existingUser.last_name ? existingUser.last_name.toLowerCase() : '';
-          const existingGradeLevel = existingUser.grade_level ? existingUser.grade_level : '';
-          const existingDivision = existingUser.division ? existingUser.division : '';
-          const existingRoom = existingUser.room ? existingUser.room : '';
-          const isEmailChanged = existingEmail !== record.email.toLowerCase();
-          const isFirstNameChanged = existingFirstName !== record.firstName.toLowerCase();
-          const isLastNameChanged = existingLastName !== record.lastName.toLowerCase();
-          const isGradeLevelChanged = record.gradeLevel ? existingGradeLevel !== record.gradeLevel : false;
-          const isDivisionChanged = record.division ? existingDivision !== record.division : false;
-          const isRoomChanged = record.room ? existingRoom !== record.room : false;
-          return isEmailChanged || isFirstNameChanged || isLastNameChanged || isGradeLevelChanged || isDivisionChanged || isRoomChanged;
-        }
-        return false;
-      });
-  
-      setUpdatedUsers(updatedRecords); 
-    };
-  
-    if (records.length > 0) {
       findUpdatedUsers(records);
+      
+      if (newUsers.length === 0 && updatedUsers.length === 0) {
+        setPopupMessage('No new or updated users found');
+      }
     }
+
     setLoading(false);
-  }, [records, existingUsers]);
+  }, [records,findNewUsers, findUpdatedUsers]);
 
   const handleJsonData = (jsonData) => {
     if (Array.isArray(jsonData)) {

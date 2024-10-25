@@ -37,13 +37,18 @@ code {
 }
 
 .left-container,
-.right-container {
+.right-container,
+.center-container {
   flex: 1; /* Take up equal space */
 }
 
 .left-container {
   display: flex;
   justify-content: flex-end;
+}
+.center-container {
+  display: flex;
+  justify-content: center;
 }
 .right-container {
   display: flex;

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 function DisplaySearchedUsers ({users, userClasses}) {
     const navigate = useNavigate();
     const [searchedUsers, setSearchedUsers] = useState(users);
+  
+
     useEffect(() => {
         setSearchedUsers(users);
     }, [users]);
